@@ -1,33 +1,25 @@
-import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from '../src/app.module';
-import * as fs from 'fs';
+import { writeFileSync, mkdirSync } from 'fs';
+import { join } from 'path';
+import { SwaggerModule } from '@nestjs/swagger';
+import { AppFactory } from '../src/app.factory';
 
-async function generate() {
-  const outputPath = process.env.OUTPUT_PATH;
-  if (!outputPath) {
-    console.error('OUTPUT_PATH environment variable is required');
-    process.exit(1);
-  }
+async function generateOpenApiSpec() {
+  const app = await AppFactory.create();
+  const document = SwaggerModule.createDocument(
+    app,
+    AppFactory.getSwaggerConfig(),
+  );
 
-  const app = await NestFactory.create(AppModule, { logger: false });
-  app.setGlobalPrefix('api');
+  const outputPath = join(process.cwd(), 'docs', 'openapi.json');
+  mkdirSync(join(process.cwd(), 'docs'), { recursive: true });
+  writeFileSync(outputPath, JSON.stringify(document, null, 2));
 
-  const config = new DocumentBuilder()
-    .setTitle('Partnerble API')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
   console.log(`openapi.json saved to ${outputPath}`);
 
   await app.close();
-  process.exit(0);
 }
 
-generate().catch((err) => {
-  console.error(err);
+generateOpenApiSpec().catch((error) => {
+  console.error('Error generating OpenAPI spec:', error);
   process.exit(1);
 });

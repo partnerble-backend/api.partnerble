@@ -25,12 +25,6 @@ PROJECT_OPENAPI_DIR가 설정되지 않았습니다.
 /setting 을 실행해 PROJECT_OPENAPI_DIR를 설정해 주세요.
 ```
 
-출력 경로를 구성한다:
-
-```
-OUTPUT_PATH="$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json"
-```
-
 해당 디렉터리가 존재하는지 확인한다:
 
 ```bash
@@ -41,29 +35,12 @@ ls "$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/"
 
 ---
 
-### Step 2 — 앱 환경변수 로드
+### Step 2 — OpenAPI JSON 생성
 
-`scripts/generate-openapi.ts`는 NestJS AppModule을 부트스트랩하므로 앱 환경변수가 필요하다.
-`.env.local` 파일을 소싱해 현재 쉘에 로드한다:
-
-```bash
-set -a && source .env.local && set +a
-```
-
-`.env.local`이 없으면 사용자에게 알린다:
-
-```
-.env.local 파일이 없습니다. 앱 환경변수가 없으면 generate:openapi가 실패할 수 있습니다.
-```
-
----
-
-### Step 3 — OpenAPI JSON 생성
-
-`OUTPUT_PATH` 환경변수를 전달해 스크립트를 실행한다:
+`pnpm generate:openapi`를 실행한다. 스크립트는 `docs/openapi.json`에 파일을 생성한다:
 
 ```bash
-OUTPUT_PATH="$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json" pnpm generate:openapi
+pnpm generate:openapi
 ```
 
 `scripts/generate-openapi.ts`는 HTTP 서버 없이 NestJS 앱 메타데이터만 수집해 JSON을 생성한다.
@@ -72,9 +49,17 @@ OUTPUT_PATH="$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json" pnpm generat
 
 ---
 
-### Step 4 — 완료 보고
+### Step 3 — Google Drive로 복사
 
-생성된 파일을 확인하고 요약 보고한다:
+생성된 `docs/openapi.json`을 Google Drive 경로로 복사한다:
+
+```bash
+cp "docs/openapi.json" "$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json"
+```
+
+---
+
+### Step 4 — 완료 보고
 
 ```bash
 ls -lh "$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json"
@@ -84,8 +69,8 @@ ls -lh "$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json"
 
 ```bash
 python3 -c "
-import json, sys
-with open('$OUTPUT_PATH') as f:
+import json
+with open('docs/openapi.json') as f:
     d = json.load(f)
 print('title:', d['info']['title'])
 print('version:', d['info']['version'])
@@ -95,7 +80,7 @@ print('endpoints:', len(d.get('paths', {})), 'paths')
 
 ```
 ✅ openapi.json 생성 완료
-경로: [OUTPUT_PATH]
+경로: $PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json
 title: Partnerble API
 version: 1.0
 endpoints: N paths
@@ -105,13 +90,13 @@ endpoints: N paths
 
 ## Implementation Notes
 
-- **HTTP 서버 미사용**: `scripts/generate-openapi.ts`는 `NestFactory.create()` 후 `listen()` 없이 `SwaggerModule.createDocument()`만 호출하고 `app.close()`로 종료
-- **실행 명령**: `pnpm generate:openapi` (`package.json`의 `ts-node --transpile-only -r tsconfig-paths/register scripts/generate-openapi.ts`)
-- **환경변수 필요**: `AppModule`의 Joi 스키마 검증 때문에 앱 env vars가 있어야 부트스트랩 성공
-- **출력 경로**: `$PROJECT_DRIVE_PATH/$PROJECT_OPENAPI_DIR/openapi.json` 고정
+- **HTTP 서버 미사용**: `scripts/generate-openapi.ts`는 `AppFactory.create()` 후 `listen()` 없이 `SwaggerModule.createDocument()`만 호출하고 `app.close()`로 종료
+- **출력 위치**: `docs/openapi.json` (프로젝트 루트 기준) → 이후 Claude Code env vars로 Google Drive로 복사
+- **실행 명령**: `pnpm generate:openapi` (`package.json`의 `ts-node scripts/generate-openapi.ts`)
+- **앱 env vars**: `.env` 파일에 더미값이라도 채워져 있어야 Joi 검증 통과
 
 ---
 
 ## Tools You Can Use
 
-- **Bash** — 환경변수 확인, 스크립트 실행, 파일 확인
+- **Bash** — 환경변수 확인, 스크립트 실행, 파일 복사
