@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Generated docs
+docs/openapi.json
+
 # Environment
 .env
 .env.local

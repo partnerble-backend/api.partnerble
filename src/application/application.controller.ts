@@ -14,7 +14,7 @@ import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { ApplicationResponseDto } from './dto/application-response.dto';
 import { MAX_FILE_SIZE_BYTES } from '../common/s3/s3.constants';
-import { UploadableFile } from 'src/common/s3/s3.service';
+import { UploadableFile } from '../common/s3/s3.service';
 
 @Controller('applications')
 export class ApplicationController {
