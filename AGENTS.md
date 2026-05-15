@@ -123,6 +123,32 @@ export class ApplicationDto {
 - 상태 변경은 `PATCH`로, 전체 교체는 `PUT`으로
 - HTTP 상태코드를 의미에 맞게 사용 (`201 Created`, `200 OK`, `404 Not Found`)
 
+**Response format rules:**
+
+모든 응답은 아래 규격을 따른다. 공통 인터페이스는 `src/common/dto/`에 정의되어 있으며 반드시 import해서 사용한다.
+
+| 유형 | 클래스 | Shape | Status |
+|---|---|---|---|
+| Create | 도메인 flat DTO | `{ id, ...fields, createdAt }` | 201 |
+| Detail | 도메인 flat DTO | `{ id, ...fields }` | 200 |
+| List | `ListResponseDto<T>` | `{ items: T[], total: number }` | 200 |
+| Paginated list | `PaginatedResponseDto<T>` | `{ items: T[], total: number, page: number, limit: number }` | 200 |
+| Update | 도메인 flat DTO | `{ id, ...updatedFields, updatedAt }` | 200 |
+| Delete | — | body 없음 | 204 |
+| Error | NestJS 기본값 | `{ statusCode, message, error }` | 4xx/5xx |
+
+```ts
+// ✅ List 응답 예시
+import { ListResponseDto } from '../../common/dto/list-response.dto';
+
+export class RecruitListResponseDto extends ListResponseDto<RecruitListItemDto> {}
+
+// ✅ Paginated 응답 예시
+import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto';
+
+export class ApplicationListResponseDto extends PaginatedResponseDto<ApplicationListItemDto> {}
+```
+
 **Error handling rules:**
 
 - NestJS 내장 예외 클래스 사용 (`NotFoundException`, `BadRequestException` 등)
