@@ -2,16 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-
-type ApplicationWithRelations = Prisma.ApplicationGetPayload<{
-  include: {
-    account: true;
-    recruit: {
-      include: { account: true };
-    };
-  };
-}>;
+import { ApplicationDetailResponseDto } from '../../application/dto/application-detail-response.dto';
 
 @Injectable()
 export class NotificationService {
@@ -21,7 +12,7 @@ export class NotificationService {
   private readonly operatorEmail: string;
 
   constructor(
-    private readonly configService: ConfigService,
+    configService: ConfigService,
     private readonly prisma: PrismaService,
   ) {
     this.sesClient = new SESClient({
@@ -80,7 +71,7 @@ export class NotificationService {
   }
 
   private async sendToOperator(
-    application: ApplicationWithRelations,
+    application: ApplicationDetailResponseDto,
   ): Promise<void> {
     const {
       account: partner,
@@ -101,7 +92,7 @@ export class NotificationService {
   }
 
   private async sendToFounder(
-    application: ApplicationWithRelations,
+    application: ApplicationDetailResponseDto,
   ): Promise<void> {
     const {
       account: partner,

@@ -12,7 +12,7 @@ import {
 import * as crypto from 'crypto';
 import * as path from 'path';
 
-interface UploadableFile {
+export interface UploadableFile {
   buffer: Buffer;
   originalname: string;
   mimetype: string;
