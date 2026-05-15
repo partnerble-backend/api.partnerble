@@ -14,6 +14,6 @@ export class RecruitListItemDto {
 }
 
 export class RecruitListResponseDto {
-  data: RecruitListItemDto[];
+  items: RecruitListItemDto[];
   total: number;
 }

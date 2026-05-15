@@ -86,7 +86,7 @@ export class RecruitService {
       }),
       this.prisma.recruit.count({ where: { isActive } }),
     ]);
-    return { data, total };
+    return { items: data, total };
   }
 
   async findOne(id: string): Promise<RecruitDetailResponseDto> {
@@ -108,6 +108,6 @@ export class RecruitService {
       },
     });
     if (!recruit) throw new NotFoundException('존재하지 않는 공고입니다.');
-    return { data: recruit };
+    return recruit;
   }
 }

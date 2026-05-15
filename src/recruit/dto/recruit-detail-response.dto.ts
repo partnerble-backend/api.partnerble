@@ -15,6 +15,4 @@ export class RecruitDetailItemDto {
   createdAt: Date;
 }
 
-export class RecruitDetailResponseDto {
-  data: RecruitDetailItemDto;
-}
+export class RecruitDetailResponseDto extends RecruitDetailItemDto {}
