@@ -126,6 +126,30 @@ export class NotificationService {
     await this.sendEmail(founderEmail, subject, body);
   }
 
+  async notifyRecruitSubmission(data: {
+    recruitId: string;
+    companyName: string;
+    roleDesc: string;
+    name: string;
+    email: string;
+  }): Promise<void> {
+    const subject = `[파트너블] 새 공고 신청 — ${data.companyName}`;
+    const body = [
+      `회사명: ${data.companyName}`,
+      `역할: ${data.roleDesc}`,
+      `신청자 이름: ${data.name}`,
+      `신청자 이메일: ${data.email}`,
+    ].join('\n');
+
+    try {
+      await this.sendEmail(this.operatorEmail, subject, body);
+    } catch (error) {
+      this.logger.error(
+        `Recruit notification failed for recruit ${data.recruitId}: ${(error as Error).message}`,
+      );
+    }
+  }
+
   private async sendEmail(
     to: string,
     subject: string,

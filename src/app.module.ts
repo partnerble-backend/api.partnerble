@@ -7,6 +7,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { PrismaModule } from './prisma/prisma.module';
 import { S3Module } from './common/s3/s3.module';
 import { ApplicationModule } from './application/application.module';
+import { RecruitModule } from './recruit/recruit.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ApplicationModule } from './application/application.module';
     PrismaModule,
     S3Module,
     ApplicationModule,
+    RecruitModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
