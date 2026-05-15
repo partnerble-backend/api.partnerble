@@ -14,6 +14,7 @@ import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { ApplicationResponseDto } from './dto/application-response.dto';
 import { MAX_FILE_SIZE_BYTES } from '../common/s3/s3.constants';
+import { UploadableFile } from 'src/common/s3/s3.service';
 
 @Controller('applications')
 export class ApplicationController {
@@ -35,7 +36,7 @@ export class ApplicationController {
         fileIsRequired: false,
       }),
     )
-    file?: Express.Multer.File,
+    file?: UploadableFile,
   ): Promise<ApplicationResponseDto> {
     return this.applicationService.create(dto, file);
   }
