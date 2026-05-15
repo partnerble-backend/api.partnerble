@@ -12,6 +12,12 @@ import {
 import * as crypto from 'crypto';
 import * as path from 'path';
 
+export interface UploadableFile {
+  buffer: Buffer;
+  originalname: string;
+  mimetype: string;
+}
+
 @Injectable()
 export class S3Service {
   private readonly logger = new Logger(S3Service.name);
@@ -34,7 +40,7 @@ export class S3Service {
   }
 
   async upload(
-    file: Express.Multer.File,
+    file: UploadableFile,
     prefix: string,
   ): Promise<{ url: string; key: string }> {
     const ext = path.extname(file.originalname);
