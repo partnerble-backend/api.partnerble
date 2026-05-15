@@ -139,12 +139,12 @@ export class ApplicationDto {
 
 ```ts
 // ✅ List 응답 예시
-import { ListResponseDto } from '../../common/dto/list-response.dto';
+import { ListResponseDto } from '../../common/dto/response.dto';
 
 export class RecruitListResponseDto extends ListResponseDto<RecruitListItemDto> {}
 
 // ✅ Paginated 응답 예시
-import { PaginatedResponseDto } from '../../common/dto/paginated-response.dto';
+import { PaginatedResponseDto } from '../../common/dto/response.dto';
 
 export class ApplicationListResponseDto extends PaginatedResponseDto<ApplicationListItemDto> {}
 ```

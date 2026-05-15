@@ -1,5 +1,5 @@
 import { BudgetUnit } from '@prisma/client';
-import { ListResponseDto } from '../../common/dto/list-response.dto';
+import { ListResponseDto } from '../../common/dto/response.dto';
 
 export class RecruitListItemDto {
   id: string;
