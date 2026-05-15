@@ -5,6 +5,8 @@ import * as Joi from 'joi';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { PrismaModule } from './prisma/prisma.module';
+import { S3Module } from './common/s3/s3.module';
+import { ApplicationModule } from './application/application.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { PrismaModule } from './prisma/prisma.module';
       }),
     }),
     PrismaModule,
+    S3Module,
+    ApplicationModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
