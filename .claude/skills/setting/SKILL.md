@@ -55,11 +55,12 @@ ls ~/Library/CloudStorage/GoogleDrive-[name]@partnerble.com/"Shared drives"/
 
 **이미 설정된 값이 있으면** (Step 1에서 읽은 `settings.local.json`), 해당 값을 각 질문의 첫 번째 옵션(추천)으로 제시한다. 설정된 값이 없으면 Step 2에서 감지한 경로를 추천 옵션으로 사용한다.
 
-AskUserQuestion으로 세 가지 값을 입력받는다:
+AskUserQuestion으로 네 가지 값을 입력받는다:
 
 - `PROJECT_DRIVE_PATH`: 추천 = 현재 설정값 또는 감지된 공유 드라이브 경로
 - `PROJECT_DOCS_DIR`: 추천 = 현재 설정값 또는 예시 없음 (직접 입력)
 - `PROJECT_WORKS_DIR`: 추천 = 현재 설정값 또는 예시 없음 (직접 입력)
+- `PROJECT_OPENAPI_DIR`: 추천 = 현재 설정값 또는 예시 없음 (직접 입력) — `/openapi` 스킬이 openapi.json을 저장할 디렉터리 (`PROJECT_DRIVE_PATH` 기준 상대 경로)
 
 입력받은 루트 경로가 실제로 존재하는지 확인한다:
 
@@ -79,7 +80,8 @@ ls "[PROJECT_DRIVE_PATH]"
   "env": {
     "PROJECT_DRIVE_PATH": "[입력받은 루트 경로]",
     "PROJECT_DOCS_DIR": "[입력받은 docs 상대경로]",
-    "PROJECT_WORKS_DIR": "[입력받은 works 상대경로]"
+    "PROJECT_WORKS_DIR": "[입력받은 works 상대경로]",
+    "PROJECT_OPENAPI_DIR": "[입력받은 openapi 상대경로]"
   }
 }
 ```
@@ -90,12 +92,14 @@ ls "[PROJECT_DRIVE_PATH]"
 ✅ 초기 설정이 완료됐습니다.
 
 설정된 값:
-- PROJECT_DRIVE_PATH: [경로]
-- PROJECT_DOCS_DIR:   [상대경로]
-- PROJECT_WORKS_DIR:  [상대경로]
+- PROJECT_DRIVE_PATH:   [경로]
+- PROJECT_DOCS_DIR:     [상대경로]
+- PROJECT_WORKS_DIR:    [상대경로]
+- PROJECT_OPENAPI_DIR:  [상대경로]
 
-docs 경로:  [PROJECT_DRIVE_PATH]/[PROJECT_DOCS_DIR]
-works 경로: [PROJECT_DRIVE_PATH]/[PROJECT_WORKS_DIR]
+docs 경로:    [PROJECT_DRIVE_PATH]/[PROJECT_DOCS_DIR]
+works 경로:   [PROJECT_DRIVE_PATH]/[PROJECT_WORKS_DIR]
+openapi 경로: [PROJECT_DRIVE_PATH]/[PROJECT_OPENAPI_DIR]/openapi.json
 
 다음 단계:
 1. 팀 채널에서 작업 카드를 생성하고 Feature ID를 발급받으세요.
@@ -121,4 +125,4 @@ works 경로: [PROJECT_DRIVE_PATH]/[PROJECT_WORKS_DIR]
 - `.claude/settings.local.json`은 gitignore 처리되어 있어 커밋되지 않는다
 - 기존 `permissions` 등 다른 설정은 덮어쓰지 않고 유지한다
 - `/setting`은 1회성 초기 설정용이며, 경로 변경이 필요할 때도 재실행할 수 있다
-- `PROJECT_DOCS_DIR` / `PROJECT_WORKS_DIR`은 `PROJECT_DRIVE_PATH` 기준 상대 경로다 (예: `dev/org/partnerble/partnerble-frontend/works`)
+- `PROJECT_DOCS_DIR` / `PROJECT_WORKS_DIR` / `PROJECT_OPENAPI_DIR`은 모두 `PROJECT_DRIVE_PATH` 기준 상대 경로다 (예: `dev/partnerble-backend`)
