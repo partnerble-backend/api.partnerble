@@ -13,7 +13,7 @@ export class CreateApplicationDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  contact: string;
+  phone: string;
 
   @IsString()
   @IsNotEmpty()

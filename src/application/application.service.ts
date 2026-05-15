@@ -46,7 +46,7 @@ export class ApplicationService {
       const account = await tx.account.create({
         data: {
           name: dto.name,
-          phone: dto.contact,
+          phone: dto.phone,
           type: 'PARTNER',
         },
       });
