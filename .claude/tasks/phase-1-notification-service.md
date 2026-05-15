@@ -2,7 +2,7 @@
 
 ## Summary
 
-지원서 제출 후 운영자와 창업자(founder)에게 이메일 알림을 SendGrid로 발송한다. 발송은 비동기이며 실패해도 지원서 저장 결과(201)에 영향을 주지 않는다. 발송 성공 시 `Application.emailNotifiedAt`을 기록한다.
+지원서 제출 후 운영자와 창업자(founder)에게 이메일 알림을 **AWS SES**로 발송한다. 발송은 비동기이며 실패해도 지원서 저장 결과(201)에 영향을 주지 않는다. 발송 성공 시 `Application.emailNotifiedAt`을 기록한다.
 
 ---
 
@@ -12,7 +12,9 @@
 
 **요구사항:**
 
-- [ ] `pnpm add @sendgrid/mail`
+- [ ] `pnpm add @aws-sdk/client-ses`
+
+> `@aws-sdk/client-s3`가 이미 설치되어 있으므로 AWS SDK v3 패턴 동일하게 사용
 
 ---
 
@@ -22,7 +24,7 @@
 
 **작업:**
 
-- [ ] 기존 `src/common/notification/` stub을 실제 SendGrid 구현으로 교체
+- [ ] 기존 `src/common/notification/` stub을 실제 AWS SES 구현으로 교체
 - 모듈 위치는 명세서의 `src/notification/`이 아닌 기존 `src/common/notification/` 유지 (이미 `ApplicationModule`에 연결됨)
 
 ---
@@ -103,14 +105,17 @@ async notify(applicationId: string): Promise<void> {
 
 ---
 
-### 4. 환경변수 추가
+### 4. 환경변수 변경
 
-**신규 env var:** `SENDGRID_FROM_EMAIL` — 발신자 이메일 주소 (SendGrid에서 인증된 도메인)
+**신규 env var:** `SES_FROM_EMAIL` — SES에서 인증된 발신자 이메일 주소
+
+**제거 env var:** `SENDGRID_API_KEY` — SES는 IAM 역할로 인증하므로 API 키 불필요
 
 **요구사항:**
 
-- [ ] `src/app.module.ts` Joi 스키마에 `SENDGRID_FROM_EMAIL: Joi.string().email().required()` 추가
-- [ ] `.env.example`에 `SENDGRID_FROM_EMAIL=` 항목 추가
+- [ ] `src/app.module.ts` Joi 스키마에서 `SENDGRID_API_KEY` 제거, `SES_FROM_EMAIL: Joi.string().email().required()` 추가
+- [ ] `.env.example`에서 `SENDGRID_API_KEY` 제거, `SES_FROM_EMAIL=` 추가
+- [ ] SES 클라이언트 인증: 로컬에서는 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` 사용, 운영(EB)에서는 IAM 역할 자동 인증
 
 ---
 
@@ -119,7 +124,7 @@ async notify(applicationId: string): Promise<void> {
 - [ ] `notify()` 실행 시 운영자/창업자에게 이메일 2통 발송
 - [ ] 발송 성공 시 `Application.emailNotifiedAt` 업데이트
 - [ ] 발송 실패 시 예외 전파 없이 로그만 출력
-- [ ] `SENDGRID_FROM_EMAIL` 환경변수 Joi 검증에 추가
+- [ ] `SES_FROM_EMAIL` 환경변수 Joi 검증에 추가, `SENDGRID_API_KEY` 제거
 - [ ] `pnpm lint` 통과
 
 ---
@@ -127,6 +132,8 @@ async notify(applicationId: string): Promise<void> {
 ## Notes
 
 - `Promise.allSettled` 사용 — 한 쪽 실패가 다른 쪽 발송을 막지 않음
-- `@sendgrid/mail` 타입은 패키지에 내장되어 있어 `@types/sendgrid` 별도 불필요
+- `@aws-sdk/client-ses` 타입은 패키지에 내장되어 있어 별도 `@types` 불필요
 - 창업자 이메일(`recruit.account.email`)이 null인 경우 (Account.email이 nullable) 발송 건너뜀
+- SES는 EB 환경에서 IAM 역할로 자동 인증 — 운영 환경에서 별도 키 불필요
+- 로컬 개발 시 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`로 SES 접근 (기존 S3와 동일 키 사용 가능, SES 권한 추가 필요)
 - SMS(`smsNotifiedAt`)는 이번 태스크 범위 외, 컬럼 유지만
