@@ -5,4 +5,6 @@ export class ApplicationResponseDto {
   recruitId: string;
   status: ApplicationStatus;
   createdAt: Date;
+  introduction: string;
+  attachmentUrl: string | null;
 }

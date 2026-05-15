@@ -19,7 +19,7 @@ import { ApplicationModule } from './application/application.module';
         AWS_ACCESS_KEY_ID: Joi.string().required(),
         AWS_SECRET_ACCESS_KEY: Joi.string().required(),
         OPERATOR_EMAIL: Joi.string().email().required(),
-        SENDGRID_API_KEY: Joi.string().required(),
+        SES_FROM_EMAIL: Joi.string().email().required(),
         ADMIN_API_KEY: Joi.string().required(),
       }),
     }),
