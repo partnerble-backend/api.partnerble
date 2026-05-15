@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// 계정 유형 — 창업자(FOUNDER) 또는 파트너(PARTNER)
 enum AccountType {
   FOUNDER
   PARTNER
@@ -14,64 +15,99 @@ enum AccountType {
   @@map("account_type")
 }
 
+/// 사용자 계정 — 창업자와 파트너를 단일 테이블로 관리하며 type으로 구분
 model Account {
+  /// cuid 기반 고유 식별자
   id           String        @id @default(cuid())
+  /// 로그인 및 알림 수신용 이메일 (유니크)
   email        String        @unique
+  /// 연락처 전화번호
   phone        String
+  /// 계정 유형 (FOUNDER | PARTNER)
   type         AccountType
   createdAt    DateTime      @default(now())
+  /// 이 계정이 등록한 공고 목록 (FOUNDER 전용)
   recruits     Recruit[]
+  /// 이 계정이 제출한 지원 목록 (PARTNER 전용)
   applications Application[]
 
   @@map("accounts")
 }
 
+/// 창업자가 등록한 단기 인력 공고
 model Recruit {
   id            String        @id @default(cuid())
+  /// 공고를 등록한 창업자 계정 FK
   accountId     String
   account       Account       @relation(fields: [accountId], references: [id])
+  /// 회사명
   companyName   String
+  /// 근무 지역
   location      String
+  /// 업종
   industry      String
+  /// 역할 설명 (한 줄 요약)
   roleDesc      String
+  /// 상세 업무 내용
   detailContent String        @db.Text
+  /// 예산 금액
   budgetAmount  Int
+  /// 예산 단위 (월급 / 일급 / 프로젝트)
   budgetUnit    BudgetUnit
+  /// 기간 (예: "3개월", "2주")
   duration      String
+  /// 검색용 태그 목록
   tags          String[]
+  /// 공고 활성 여부
   isActive      Boolean       @default(true)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  /// 이 공고에 대한 지원 목록
   applications  Application[]
 
   @@map("recruits")
 }
 
+/// 예산 단위
 enum BudgetUnit {
+  /// 월급
   MONTHLY
+  /// 일급
   DAILY
+  /// 프로젝트 단위
   PER_PROJECT
 
   @@map("budget_unit")
 }
 
+/// 파트너가 공고에 제출한 지원서
 model Application {
   id              String            @id @default(cuid())
+  /// 지원 대상 공고 FK
   recruitId       String
   recruit         Recruit           @relation(fields: [recruitId], references: [id])
+  /// 지원한 파트너 계정 FK
   accountId       String
   account         Account           @relation(fields: [accountId], references: [id])
-  recruitTitle    String
-  recruitCompany  String
+  /// 지원자 이름
   name            String
+  /// 지원자 연락처
   contact         String
+  /// 자기소개
   introduction    String            @db.Text
+  /// 첨부 파일 S3 URL
   attachmentUrl   String?
+  /// 첨부 파일 S3 키
   attachmentKey   String?
+  /// 첨부 파일 원본 파일명
   attachmentName  String?
+  /// 개인정보 수집·이용 동의 일시
   privacyAgreedAt DateTime
+  /// 지원 처리 상태
   status          ApplicationStatus @default(PENDING)
+  /// 이메일 알림 발송 일시
   emailNotifiedAt DateTime?
+  /// SMS 알림 발송 일시
   smsNotifiedAt   DateTime?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -79,10 +115,15 @@ model Application {
   @@map("applications")
 }
 
+/// 지원서 처리 상태
 enum ApplicationStatus {
+  /// 접수 대기
   PENDING
+  /// 검토 완료
   REVIEWED
+  /// 연락 완료
   CONTACTED
+  /// 불합격
   REJECTED
 
   @@map("application_status")
