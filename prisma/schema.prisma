@@ -19,8 +19,10 @@ enum AccountType {
 model Account {
   /// cuid 기반 고유 식별자
   id           String        @id @default(cuid())
+  /// 이름
+  name         String
   /// 로그인 및 알림 수신용 이메일 (유니크)
-  email        String        @unique
+  email        String?       @unique
   /// 연락처 전화번호
   phone        String
   /// 계정 유형 (FOUNDER | PARTNER)
@@ -89,10 +91,6 @@ model Application {
   /// 지원한 파트너 계정 FK
   accountId       String
   account         Account           @relation(fields: [accountId], references: [id])
-  /// 지원자 이름
-  name            String
-  /// 지원자 연락처
-  contact         String
   /// 자기소개
   introduction    String            @db.Text
   /// 첨부 파일 S3 URL
