@@ -6,3 +6,84 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum AccountType {
+  FOUNDER
+  PARTNER
+
+  @@map("account_type")
+}
+
+model Account {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  phone        String
+  type         AccountType
+  createdAt    DateTime      @default(now())
+  recruits     Recruit[]
+  applications Application[]
+
+  @@map("accounts")
+}
+
+model Recruit {
+  id            String        @id @default(cuid())
+  accountId     String
+  account       Account       @relation(fields: [accountId], references: [id])
+  companyName   String
+  location      String
+  industry      String
+  roleDesc      String
+  detailContent String        @db.Text
+  budgetAmount  Int
+  budgetUnit    BudgetUnit
+  duration      String
+  tags          String[]
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  applications  Application[]
+
+  @@map("recruits")
+}
+
+enum BudgetUnit {
+  MONTHLY
+  DAILY
+  PER_PROJECT
+
+  @@map("budget_unit")
+}
+
+model Application {
+  id              String            @id @default(cuid())
+  recruitId       String
+  recruit         Recruit           @relation(fields: [recruitId], references: [id])
+  accountId       String
+  account         Account           @relation(fields: [accountId], references: [id])
+  recruitTitle    String
+  recruitCompany  String
+  name            String
+  contact         String
+  introduction    String            @db.Text
+  attachmentUrl   String?
+  attachmentKey   String?
+  attachmentName  String?
+  privacyAgreedAt DateTime
+  status          ApplicationStatus @default(PENDING)
+  emailNotifiedAt DateTime?
+  smsNotifiedAt   DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWED
+  CONTACTED
+  REJECTED
+
+  @@map("application_status")
+}
