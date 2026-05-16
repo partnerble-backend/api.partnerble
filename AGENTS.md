@@ -110,6 +110,21 @@ export class ApplicationDto {
 - 모든 request body는 DTO 클래스로 정의한다
 - `class-validator` 데코레이터로 유효성 검사를 명시한다
 - Response DTO는 Prisma 모델을 그대로 노출하지 않고 별도 정의한다
+- 모든 DTO 프로퍼티에 `@ApiProperty()` 또는 `@ApiPropertyOptional()`을 추가한다
+  - 문자열: `@ApiProperty({ example: '...' })`
+  - 숫자: `@ApiProperty({ example: 0 })`
+  - 열거형: `@ApiProperty({ enum: XxxEnum, example: XxxEnum.VALUE })`
+  - 배열: `@ApiProperty({ type: [String] })` 또는 `@ApiProperty({ type: () => [ItemDto] })`
+  - 날짜: `@ApiProperty({ type: String, format: 'date-time' })`
+  - nullable: `@ApiProperty({ nullable: true })`
+  - 선택값: `@ApiPropertyOptional({ ... })`
+- `ListResponseDto` / `PaginatedResponseDto`를 상속하는 클래스는 `items` 프로퍼티를 오버라이드해 타입을 명시한다:
+  ```ts
+  export class RecruitListResponseDto extends ListResponseDto<RecruitListItemDto> {
+    @ApiProperty({ type: () => [RecruitListItemDto] })
+    items: RecruitListItemDto[];
+  }
+  ```
 
 **Prisma rules:**
 
