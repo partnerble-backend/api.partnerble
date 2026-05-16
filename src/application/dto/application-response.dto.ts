@@ -61,3 +61,14 @@ export class AdminApplicationListResponseDto extends PaginatedResponseDto<AdminA
   @ApiProperty({ type: () => [AdminApplicationListItemDto] })
   items: AdminApplicationListItemDto[];
 }
+
+export class UpdateApplicationStatusResponseDto {
+  @ApiProperty({ example: 'clx...' })
+  id: string;
+
+  @ApiProperty({ enum: ApplicationStatus, example: ApplicationStatus.REVIEWED })
+  status: ApplicationStatus;
+
+  @ApiProperty({ type: String, format: 'date-time' })
+  updatedAt: Date;
+}
