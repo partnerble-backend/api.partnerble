@@ -1,6 +1,6 @@
 # Partnerble API
 
-![version](https://img.shields.io/badge/version-v0.1.0-blue)
+![version](https://img.shields.io/badge/version-v0.1.2-blue)
 
 초기 스타트업 창업자(Founder)와 단기 인력(파트너)을 연결하는 매칭 플랫폼 백엔드 API.
 
