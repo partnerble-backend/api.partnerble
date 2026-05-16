@@ -149,6 +149,37 @@ import { PaginatedResponseDto } from '../../common/dto/response.dto';
 export class ApplicationListResponseDto extends PaginatedResponseDto<ApplicationListItemDto> {}
 ```
 
+**Swagger decoration rules:**
+
+모든 엔드포인트에 아래 데코레이터를 빠짐없이 작성한다.
+
+- `@ApiOperation({ summary, operationId, description })` 필수
+  - `operationId`: 컨트롤러 메서드명과 동일 (camelCase)
+  - `description`: 동작 조건·예외 케이스를 불릿(`•`)으로 기술
+- Path parameter → `@ApiParam({ name, description, example })`
+- Query parameter → `@ApiQuery({ name, description, required, example })`
+- Request body → `@ApiBody({ type: XxxDto })` (POST/PATCH)
+- 응답은 발생 가능한 status code별로 `@ApiResponse` 각각 선언
+  - 성공: `type`에 Response DTO 명시
+  - 실패: `description`에 발생 조건 명시 (예: `'존재하지 않는 id'`)
+- 인증 필요 엔드포인트: `@ApiSecurity('x-api-key')`
+
+```ts
+// ✅ 예시
+@ApiOperation({
+  summary: '지원서 상태 변경',
+  operationId: 'updateApplicationStatus',
+  description: `관리자가 지원서 상태를 변경합니다.
+  • x-api-key 헤더 인증 필요`,
+})
+@ApiParam({ name: 'id', description: '지원서 ID', example: 'clx...' })
+@ApiBody({ type: UpdateApplicationStatusDto })
+@ApiResponse({ status: 200, description: '상태 변경 성공', type: UpdateApplicationStatusResponseDto })
+@ApiResponse({ status: 401, description: 'API Key 없거나 불일치' })
+@ApiResponse({ status: 404, description: '존재하지 않는 지원서 id' })
+@ApiSecurity('x-api-key')
+```
+
 **Error handling rules:**
 
 - NestJS 내장 예외 클래스 사용 (`NotFoundException`, `BadRequestException` 등)
