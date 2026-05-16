@@ -5,7 +5,9 @@ import {
   Get,
   HttpCode,
   MaxFileSizeValidator,
+  Param,
   ParseFilePipe,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -17,6 +19,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiResponse,
   ApiSecurity,
@@ -28,7 +31,9 @@ import { CreateApplicationDto } from './dto/create-application.dto';
 import {
   AdminApplicationListResponseDto,
   ApplicationResponseDto,
+  UpdateApplicationStatusResponseDto,
 } from './dto/application-response.dto';
+import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
 import { ApplicationListQueryDto } from './dto/application-list-query.dto';
 import { MAX_FILE_SIZE_BYTES } from '../common/s3/s3.constants';
 import { UploadableFile } from '../common/s3/s3.service';
@@ -150,5 +155,32 @@ export class ApplicationController {
     @Query() query: ApplicationListQueryDto,
   ): Promise<AdminApplicationListResponseDto> {
     return this.applicationService.findAll(query);
+  }
+
+  @Patch(':id/status')
+  @UseGuards(ApiKeyGuard)
+  @ApiSecurity('x-api-key')
+  @ApiOperation({
+    summary: '지원서 상태 변경 (관리자)',
+    operationId: 'updateApplicationStatus',
+    description: `관리자가 지원서의 처리 상태를 변경합니다.
+    • x-api-key 헤더 인증 필요
+    • 허용 상태값: PENDING, REVIEWED, CONTACTED, REJECTED`,
+  })
+  @ApiParam({ name: 'id', description: '지원서 ID', example: 'clx...' })
+  @ApiBody({ type: UpdateApplicationStatusDto })
+  @ApiResponse({
+    status: 200,
+    description: '상태 변경 성공',
+    type: UpdateApplicationStatusResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'status 값이 유효하지 않음' })
+  @ApiResponse({ status: 401, description: '인증 실패' })
+  @ApiResponse({ status: 404, description: '존재하지 않는 지원서 id' })
+  updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateApplicationStatusDto,
+  ): Promise<UpdateApplicationStatusResponseDto> {
+    return this.applicationService.updateStatus(id, dto);
   }
 }

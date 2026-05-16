@@ -12,9 +12,11 @@ import {
   AdminApplicationListItemDto,
   AdminApplicationListResponseDto,
   ApplicationResponseDto,
+  UpdateApplicationStatusResponseDto,
 } from './dto/application-response.dto';
 import { UploadableFile } from '../common/s3/s3.service';
 import { ApplicationListQueryDto } from './dto/application-list-query.dto';
+import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -130,5 +132,25 @@ export class ApplicationService {
     }));
 
     return { items, total, page, limit };
+  }
+
+  async updateStatus(
+    id: string,
+    dto: UpdateApplicationStatusDto,
+  ): Promise<UpdateApplicationStatusResponseDto> {
+    const existing = await this.prisma.application.findUnique({
+      where: { id },
+    });
+    if (!existing) {
+      throw new NotFoundException('존재하지 않는 지원서입니다.');
+    }
+
+    const updated = await this.prisma.application.update({
+      where: { id },
+      data: { status: dto.status },
+      select: { id: true, status: true, updatedAt: true },
+    });
+
+    return updated;
   }
 }
