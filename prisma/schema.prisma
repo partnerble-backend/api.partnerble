@@ -32,7 +32,7 @@ model Account {
   /// 이 계정이 등록한 공고 목록 (FOUNDER 전용)
   recruits     Recruit[]
   /// 이 계정이 제출한 지원 목록 (PARTNER 전용)
-  applications Application[]
+  resumes Resume[]
 
   @@map("accounts")
 }
@@ -66,7 +66,7 @@ model Recruit {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   /// 이 공고에 대한 지원 목록
-  applications  Application[]
+  resumes       Resume[]
 
   @@map("recruits")
 }
@@ -84,16 +84,16 @@ enum BudgetUnit {
 }
 
 /// 파트너가 공고에 제출한 지원서
-model Application {
-  id              String            @id @default(cuid())
+model Resume {
+  id              String       @id @default(cuid())
   /// 지원 대상 공고 FK
   recruitId       String
-  recruit         Recruit           @relation(fields: [recruitId], references: [id])
+  recruit         Recruit      @relation(fields: [recruitId], references: [id])
   /// 지원한 파트너 계정 FK
   accountId       String
-  account         Account           @relation(fields: [accountId], references: [id])
+  account         Account      @relation(fields: [accountId], references: [id])
   /// 자기소개
-  introduction    String            @db.Text
+  introduction    String       @db.Text
   /// 첨부 파일 S3 URL
   attachmentUrl   String?
   /// 첨부 파일 S3 키
@@ -103,19 +103,19 @@ model Application {
   /// 개인정보 수집·이용 동의 일시
   privacyAgreedAt DateTime
   /// 지원 처리 상태
-  status          ApplicationStatus @default(PENDING)
+  status          ResumeStatus @default(PENDING)
   /// 이메일 알림 발송 일시
   emailNotifiedAt DateTime?
   /// SMS 알림 발송 일시
   smsNotifiedAt   DateTime?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
-  @@map("applications")
+  @@map("resumes")
 }
 
 /// 지원서 처리 상태
-enum ApplicationStatus {
+enum ResumeStatus {
   /// 접수 대기
   PENDING
   /// 검토 완료
@@ -125,5 +125,5 @@ enum ApplicationStatus {
   /// 불합격
   REJECTED
 
-  @@map("application_status")
+  @@map("resume_status")
 }

@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationStatus } from '@prisma/client';
+import { ResumeStatus } from '@prisma/client';
 import { PaginatedResponseDto } from '../../common/dto/response.dto';
 
-export class ApplicationResponseDto {
+export class ResumeResponseDto {
   @ApiProperty({ example: 'clx...' })
   id: string;
 
   @ApiProperty({ example: 'clx...' })
   recruitId: string;
 
-  @ApiProperty({ enum: ApplicationStatus, example: ApplicationStatus.PENDING })
-  status: ApplicationStatus;
+  @ApiProperty({ enum: ResumeStatus, example: ResumeStatus.PENDING })
+  status: ResumeStatus;
 
   @ApiProperty({ type: String, format: 'date-time' })
   createdAt: Date;
@@ -22,7 +22,7 @@ export class ApplicationResponseDto {
   attachmentUrl: string | null;
 }
 
-export class AdminApplicationListItemDto {
+export class AdminResumeListItemDto {
   @ApiProperty({ example: 'clx...' })
   id: string;
 
@@ -50,24 +50,24 @@ export class AdminApplicationListItemDto {
   @ApiProperty({ example: 'resume.pdf', nullable: true })
   attachmentName: string | null;
 
-  @ApiProperty({ enum: ApplicationStatus, example: ApplicationStatus.PENDING })
-  status: ApplicationStatus;
+  @ApiProperty({ enum: ResumeStatus, example: ResumeStatus.PENDING })
+  status: ResumeStatus;
 
   @ApiProperty({ type: String, format: 'date-time' })
   createdAt: Date;
 }
 
-export class AdminApplicationListResponseDto extends PaginatedResponseDto<AdminApplicationListItemDto> {
-  @ApiProperty({ type: () => [AdminApplicationListItemDto] })
-  items: AdminApplicationListItemDto[];
+export class AdminResumeListResponseDto extends PaginatedResponseDto<AdminResumeListItemDto> {
+  @ApiProperty({ type: () => [AdminResumeListItemDto] })
+  items: AdminResumeListItemDto[];
 }
 
-export class UpdateApplicationStatusResponseDto {
+export class UpdateResumeStatusResponseDto {
   @ApiProperty({ example: 'clx...' })
   id: string;
 
-  @ApiProperty({ enum: ApplicationStatus, example: ApplicationStatus.REVIEWED })
-  status: ApplicationStatus;
+  @ApiProperty({ enum: ResumeStatus, example: ResumeStatus.REVIEWED })
+  status: ResumeStatus;
 
   @ApiProperty({ type: String, format: 'date-time' })
   updatedAt: Date;

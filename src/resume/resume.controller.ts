@@ -25,31 +25,31 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { ApplicationStatus } from '@prisma/client';
-import { ApplicationService } from './application.service';
-import { CreateApplicationDto } from './dto/create-application.dto';
+import { ResumeStatus } from '@prisma/client';
+import { ResumeService } from './resume.service';
+import { CreateResumeDto } from './dto/create-resume.dto';
 import {
-  AdminApplicationListResponseDto,
-  ApplicationResponseDto,
-  UpdateApplicationStatusResponseDto,
-} from './dto/application-response.dto';
-import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
-import { ApplicationListQueryDto } from './dto/application-list-query.dto';
+  AdminResumeListResponseDto,
+  ResumeResponseDto,
+  UpdateResumeStatusResponseDto,
+} from './dto/resume-response.dto';
+import { UpdateResumeStatusDto } from './dto/update-resume-status.dto';
+import { ResumeListQueryDto } from './dto/resume-list-query.dto';
 import { MAX_FILE_SIZE_BYTES } from '../common/s3/s3.constants';
 import { UploadableFile } from '../common/s3/s3.service';
 import { ApiKeyGuard } from '../common/guards/api-key.guard';
 
-@ApiTags('applications')
-@Controller('applications')
-export class ApplicationController {
-  constructor(private readonly applicationService: ApplicationService) {}
+@ApiTags('resumes')
+@Controller('resumes')
+export class ResumeController {
+  constructor(private readonly resumeService: ResumeService) {}
 
   @Post()
   @HttpCode(201)
   @UseInterceptors(FileInterceptor('attachment'))
   @ApiOperation({
     summary: '지원서 제출',
-    operationId: 'createApplication',
+    operationId: 'createResume',
     description: `채용 공고에 지원서를 제출합니다.
     • 첨부파일은 PDF, JPEG, PNG 형식만 허용합니다 (선택사항)
     • 파일 최대 크기: 10MB
@@ -83,7 +83,7 @@ export class ApplicationController {
   @ApiResponse({
     status: 201,
     description: '지원서 제출 성공',
-    type: ApplicationResponseDto,
+    type: ResumeResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -91,7 +91,7 @@ export class ApplicationController {
   })
   @ApiResponse({ status: 404, description: '존재하지 않는 공고 id' })
   create(
-    @Body() dto: CreateApplicationDto,
+    @Body() dto: CreateResumeDto,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -104,8 +104,8 @@ export class ApplicationController {
       }),
     )
     file?: UploadableFile,
-  ): Promise<ApplicationResponseDto> {
-    return this.applicationService.create(dto, file);
+  ): Promise<ResumeResponseDto> {
+    return this.resumeService.create(dto, file);
   }
 
   @Get()
@@ -113,7 +113,7 @@ export class ApplicationController {
   @ApiSecurity('x-api-key')
   @ApiOperation({
     summary: '지원서 목록 조회 (관리자)',
-    operationId: 'findAllApplications',
+    operationId: 'findAllResumes',
     description: `관리자가 전체 지원서 목록을 조회합니다.
     • x-api-key 헤더 인증 필요
     • recruitId로 특정 공고의 지원서만 필터링할 수 있습니다
@@ -130,8 +130,8 @@ export class ApplicationController {
     name: 'status',
     description: '지원서 상태 필터',
     required: false,
-    enum: ApplicationStatus,
-    example: ApplicationStatus.PENDING,
+    enum: ResumeStatus,
+    example: ResumeStatus.PENDING,
   })
   @ApiQuery({
     name: 'page',
@@ -148,13 +148,13 @@ export class ApplicationController {
   @ApiResponse({
     status: 200,
     description: '지원서 목록 조회 성공',
-    type: AdminApplicationListResponseDto,
+    type: AdminResumeListResponseDto,
   })
   @ApiResponse({ status: 401, description: 'API Key 없거나 불일치' })
   findAll(
-    @Query() query: ApplicationListQueryDto,
-  ): Promise<AdminApplicationListResponseDto> {
-    return this.applicationService.findAll(query);
+    @Query() query: ResumeListQueryDto,
+  ): Promise<AdminResumeListResponseDto> {
+    return this.resumeService.findAll(query);
   }
 
   @Patch(':id/status')
@@ -162,25 +162,25 @@ export class ApplicationController {
   @ApiSecurity('x-api-key')
   @ApiOperation({
     summary: '지원서 상태 변경 (관리자)',
-    operationId: 'updateApplicationStatus',
+    operationId: 'updateResumeStatus',
     description: `관리자가 지원서의 처리 상태를 변경합니다.
     • x-api-key 헤더 인증 필요
     • 허용 상태값: PENDING, REVIEWED, CONTACTED, REJECTED`,
   })
   @ApiParam({ name: 'id', description: '지원서 ID', example: 'clx...' })
-  @ApiBody({ type: UpdateApplicationStatusDto })
+  @ApiBody({ type: UpdateResumeStatusDto })
   @ApiResponse({
     status: 200,
     description: '상태 변경 성공',
-    type: UpdateApplicationStatusResponseDto,
+    type: UpdateResumeStatusResponseDto,
   })
   @ApiResponse({ status: 400, description: 'status 값이 유효하지 않음' })
   @ApiResponse({ status: 401, description: '인증 실패' })
   @ApiResponse({ status: 404, description: '존재하지 않는 지원서 id' })
   updateStatus(
     @Param('id') id: string,
-    @Body() dto: UpdateApplicationStatusDto,
-  ): Promise<UpdateApplicationStatusResponseDto> {
-    return this.applicationService.updateStatus(id, dto);
+    @Body() dto: UpdateResumeStatusDto,
+  ): Promise<UpdateResumeStatusResponseDto> {
+    return this.resumeService.updateStatus(id, dto);
   }
 }
