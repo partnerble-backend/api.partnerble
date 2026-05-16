@@ -7,6 +7,7 @@ export class AppFactory {
   private static swaggerConfig = new DocumentBuilder()
     .setTitle('Partnerble API')
     .setVersion('1.0')
+    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'x-api-key')
     .build();
 
   static async create(): Promise<INestApplication> {

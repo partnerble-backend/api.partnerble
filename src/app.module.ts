@@ -6,7 +6,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { PrismaModule } from './prisma/prisma.module';
 import { S3Module } from './common/s3/s3.module';
-import { ApplicationModule } from './application/application.module';
+import { ResumeModule } from './resume/resume.module';
 import { RecruitModule } from './recruit/recruit.module';
 
 @Module({
@@ -26,7 +26,7 @@ import { RecruitModule } from './recruit/recruit.module';
     }),
     PrismaModule,
     S3Module,
-    ApplicationModule,
+    ResumeModule,
     RecruitModule,
   ],
   providers: [
