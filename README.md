@@ -12,7 +12,7 @@
 | ORM | Prisma |
 | DB | PostgreSQL (AWS RDS) |
 | 파일 저장소 | AWS S3 |
-| Package Manager | pnpm |
+| Package Manager | pnpm (corepack) |
 
 ---
 
@@ -20,8 +20,8 @@
 
 ### 전제 조건
 
-- Node.js 20 이상
-- pnpm (`npm install -g pnpm`)
+- Node.js 22 이상 (`.nvmrc` 기준 — `nvm install && nvm use`)
+- Corepack (`corepack enable` — Node 22에 기본 포함)
 - Docker Desktop
 
 ### 1단계 — 저장소 클론 및 의존성 설치
@@ -29,10 +29,25 @@
 ```bash
 git clone https://github.com/partnerble-backend/api.partnerble.git
 cd api.partnerble
+nvm install && nvm use   # Node 22로 전환
+corepack enable          # pnpm 활성화
 pnpm install
 ```
 
-### 2단계 — 환경변수 설정
+### 2단계 — Claude Code 초기 설정
+
+> **필수:** Google Drive Desktop을 **partnerble.com 계정**으로 설치하고 로그인하세요.
+> 팀 공유 Docs/Works 폴더 접근에 필요합니다. → [Google Drive Desktop 다운로드](https://www.google.com/drive/download/)
+
+Claude Code에서 `/setting`을 실행하면 로컬 설정(`settings.local.json`)이 자동으로 구성됩니다.
+
+```
+/setting
+```
+
+상세 설정 방법 및 전체 작업 플로우는 팀 Google Drive의 `GUIDE.md`를 참고하세요.
+
+### 3단계 — 환경변수 설정
 
 ```bash
 cp .env.example .env
@@ -40,7 +55,7 @@ cp .env.example .env
 
 `.env` 파일을 열어 각 항목을 채운다. 사전에 환경변수 값 관련 팀에 문의 필요한 부분은 문의 하여 공유 받을 것.
 
-### 3단계 — 로컬 DB 실행 (Docker)
+### 4단계 — 로컬 DB 실행 (Docker)
 
 ```bash
 docker compose up -d
@@ -53,14 +68,14 @@ docker ps
 # partnerble-db 컨테이너가 Up 상태여야 한다
 ```
 
-### 4단계 — Prisma 마이그레이션 및 클라이언트 생성
+### 5단계 — Prisma 마이그레이션 및 클라이언트 생성
 
 ```bash
 pnpm prisma migrate dev   # DB 스키마 생성 및 마이그레이션 적용
 pnpm prisma generate      # Prisma Client 생성
 ```
 
-### 5단계 — 개발 서버 실행
+### 6단계 — 개발 서버 실행
 
 ```bash
 pnpm start:dev
@@ -105,21 +120,6 @@ main          ← 상용 배포 브랜치 (관리자가 수동으로 머지)
         ├── feature/[feature-id]/phase-1-...
         └── feature/[feature-id]/phase-2-...
 ```
-
----
-
-## 개발 환경 설정 (Claude Code)
-
-> **필수:** Google Drive Desktop을 **partnerble.com 계정**으로 설치하고 로그인하세요.
-> 팀 공유 Docs/Works 폴더 접근에 필요합니다. → [Google Drive Desktop 다운로드](https://www.google.com/drive/download/)
-
-프로젝트 클론 후 Claude Code에서 `/setting`을 실행하면 초기 설정이 자동으로 진행됩니다.
-
-```
-/setting
-```
-
-상세 설정 방법 및 전체 작업 플로우는 팀 Google Drive의 `GUIDE.md`를 참고하세요.
 
 ---
 
