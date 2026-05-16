@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationResponseDto } from './application-response.dto';
+import { ResumeResponseDto } from './resume-response.dto';
 
 class FounderAccountDto {
   @ApiProperty({ example: 'founder@example.com', nullable: true })
@@ -25,7 +25,7 @@ class PartnerAccountDto {
   phone: string | null;
 }
 
-export class ApplicationDetailResponseDto extends ApplicationResponseDto {
+export class ResumeDetailResponseDto extends ResumeResponseDto {
   @ApiProperty({ type: () => PartnerAccountDto })
   account: PartnerAccountDto;
 

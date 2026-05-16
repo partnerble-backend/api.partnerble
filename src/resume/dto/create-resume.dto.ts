@@ -1,7 +1,7 @@
 import { IsBoolean, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateApplicationDto {
+export class CreateResumeDto {
   @ApiProperty({ example: 'clx...' })
   @IsString()
   @IsNotEmpty()

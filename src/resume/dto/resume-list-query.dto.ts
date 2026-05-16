@@ -1,22 +1,22 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { ApplicationStatus } from '@prisma/client';
+import { ResumeStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
-export class ApplicationListQueryDto {
+export class ResumeListQueryDto {
   @ApiPropertyOptional({ example: 'clx...', description: '공고 ID 필터' })
   @IsOptional()
   @IsString()
   recruitId?: string;
 
   @ApiPropertyOptional({
-    enum: ApplicationStatus,
-    example: ApplicationStatus.PENDING,
+    enum: ResumeStatus,
+    example: ResumeStatus.PENDING,
     description: '지원서 상태 필터',
   })
   @IsOptional()
-  @IsEnum(ApplicationStatus)
-  status?: ApplicationStatus;
+  @IsEnum(ResumeStatus)
+  status?: ResumeStatus;
 
   @ApiPropertyOptional({
     example: 1,
