@@ -1,8 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import { Account, Recruit, Resume } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ApplicationDetailResponseDto } from '../../application/dto/application-detail-response.dto';
+
+type ResumeWithRelations = Resume & {
+  account: Account;
+  recruit: Recruit & { account: Account };
+};
 
 @Injectable()
 export class NotificationService {
@@ -28,9 +33,9 @@ export class NotificationService {
     this.operatorEmail = configService.getOrThrow<string>('OPERATOR_EMAIL');
   }
 
-  async notify(applicationId: string): Promise<void> {
-    const application = await this.prisma.application.findUnique({
-      where: { id: applicationId },
+  async notify(resumeId: string): Promise<void> {
+    const resume = await this.prisma.resume.findUnique({
+      where: { id: resumeId },
       include: {
         account: true,
         recruit: {
@@ -39,23 +44,21 @@ export class NotificationService {
       },
     });
 
-    if (!application) {
-      this.logger.warn(
-        `Application ${applicationId} not found — skipping notification`,
-      );
+    if (!resume) {
+      this.logger.warn(`Resume ${resumeId} not found — skipping notification`);
       return;
     }
 
     const results = await Promise.allSettled([
-      this.sendToOperator(application),
-      this.sendToFounder(application),
+      this.sendToOperator(resume),
+      this.sendToFounder(resume),
     ]);
 
     const allSucceeded = results.every((r) => r.status === 'fulfilled');
 
     if (allSucceeded) {
-      await this.prisma.application.update({
-        where: { id: applicationId },
+      await this.prisma.resume.update({
+        where: { id: resumeId },
         data: { emailNotifiedAt: new Date() },
       });
     } else {
@@ -63,22 +66,15 @@ export class NotificationService {
         if (result.status === 'rejected') {
           const target = index === 0 ? 'operator' : 'founder';
           this.logger.error(
-            `Email to ${target} failed for application ${applicationId}: ${(result.reason as Error).message}`,
+            `Email to ${target} failed for resume ${resumeId}: ${(result.reason as Error).message}`,
           );
         }
       });
     }
   }
 
-  private async sendToOperator(
-    application: ApplicationDetailResponseDto,
-  ): Promise<void> {
-    const {
-      account: partner,
-      recruit,
-      introduction,
-      attachmentUrl,
-    } = application;
+  private async sendToOperator(resume: ResumeWithRelations): Promise<void> {
+    const { account: partner, recruit, introduction, attachmentUrl } = resume;
     const subject = `[파트너블] 새 지원자 — ${recruit.roleDesc}`;
     const body = [
       `공고명: ${recruit.roleDesc}`,
@@ -91,15 +87,8 @@ export class NotificationService {
     await this.sendEmail(this.operatorEmail, subject, body);
   }
 
-  private async sendToFounder(
-    application: ApplicationDetailResponseDto,
-  ): Promise<void> {
-    const {
-      account: partner,
-      recruit,
-      introduction,
-      attachmentUrl,
-    } = application;
+  private async sendToFounder(resume: ResumeWithRelations): Promise<void> {
+    const { account: partner, recruit, introduction, attachmentUrl } = resume;
     const founderEmail = recruit.account.email;
 
     if (!founderEmail) {

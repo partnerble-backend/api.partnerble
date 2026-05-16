@@ -71,8 +71,8 @@ docker ps
 ### 5단계 — Prisma 마이그레이션 및 클라이언트 생성
 
 ```bash
-pnpm prisma migrate dev   # DB 스키마 생성 및 마이그레이션 적용
-pnpm prisma generate      # Prisma Client 생성
+pnpm prisma:generate      # Prisma Client 생성 (의존성 설치 후 반드시 실행)
+pnpm prisma:migrate       # DB 스키마 생성 및 마이그레이션 적용
 ```
 
 ### 6단계 — 개발 서버 실행
@@ -95,9 +95,9 @@ pnpm start:dev              # 개발 서버 실행 (watch mode)
 pnpm lint                   # ESLint 자동 수정
 pnpm lint:ci                # ESLint 검사만 (수정 없음, CI용)
 pnpm test                   # Jest 테스트
-pnpm prisma migrate dev     # DB 마이그레이션 적용
-pnpm prisma generate        # Prisma Client 재생성
-pnpm prisma studio          # DB GUI 브라우저에서 열기
+pnpm prisma:migrate         # DB 마이그레이션 적용
+pnpm prisma:generate        # Prisma Client 재생성
+pnpm prisma:studio          # DB GUI 브라우저에서 열기
 docker compose up -d        # 로컬 DB 컨테이너 기동
 docker compose down         # 로컬 DB 컨테이너 종료
 ```
