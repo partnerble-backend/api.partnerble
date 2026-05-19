@@ -111,6 +111,23 @@ docker compose down         # 로컬 DB 컨테이너 종료
 
 ---
 
+## 인프라 관리 (Terraform)
+
+운영 환경 인프라(AWS RDS, S3, ECR, Elastic Beanstalk)는 **Terraform**으로 코드로 관리합니다.
+
+```
+terraform/
+├── README.md          ← 인프라 관리 가이드 (처음 읽을 것)
+├── modules/           ← IAM, S3, ECR, RDS, EB 모듈
+└── environments/prod/ ← 운영 환경 변수값
+```
+
+인프라 변경·배포·종료 방법은 **[terraform/README.md](terraform/README.md)** 를 참고하세요.
+
+> **필요 도구:** Terraform v1.0+, AWS CLI, AWS 자격증명 (`partnerble-deploy` IAM 사용자)
+
+---
+
 ## 브랜치 전략
 
 ```
