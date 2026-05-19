@@ -1,0 +1,23 @@
+# ============================================================
+# terraform.tfvars 작성 템플릿
+# 이 파일을 복사해 terraform.tfvars를 만들고 값을 채운 뒤 사용하세요.
+#   cp terraform.tfvars.example terraform.tfvars
+#
+# ⚠️  terraform.tfvars는 .gitignore에 포함되어 있습니다.
+#     절대 git에 커밋하지 마세요.
+# ============================================================
+
+aws_region     = "ap-northeast-2"
+project        = "partnerble"
+environment    = "prod"
+aws_account_id = "REPLACE_WITH_AWS_ACCOUNT_ID"   # aws sts get-caller-identity --query Account
+
+operator_email = "REPLACE_WITH_OPERATOR_EMAIL"   # 알림 수신 이메일 (예: neo.lee@partnerble.com)
+ses_from_email = "REPLACE_WITH_SES_FROM_EMAIL"   # 발신자 이메일 (SES 인증된 주소)
+
+# ── 아래 민감값은 이 파일에 절대 기재하지 않습니다 ─────────────────────────
+# apply 시 아래 환경변수로 주입하세요:
+#
+#   export TF_VAR_db_password="your-db-password"
+#   export TF_VAR_admin_api_key="$(openssl rand -hex 32)"
+#   terraform apply -var-file="environments/prod/terraform.tfvars"

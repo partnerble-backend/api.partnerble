@@ -36,3 +36,15 @@ prisma/*.db
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Terraform
+# provider 바이너리 (대용량, 재다운로드 가능)
+terraform/.terraform/
+# 로컬 state 파일 (S3 remote backend로 관리)
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+# 실제 변수값 (db_password 등 민감값 포함 — 커밋 금지)
+terraform/**/*.tfvars
+# 템플릿 파일은 커밋 허용
+!terraform/**/*.tfvars.example
+# .terraform.lock.hcl 는 커밋 대상 (provider 버전 고정용)
