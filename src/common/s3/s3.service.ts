@@ -28,15 +28,7 @@ export class S3Service {
   constructor(private readonly configService: ConfigService) {
     this.region = this.configService.getOrThrow<string>('AWS_REGION');
     this.bucket = this.configService.getOrThrow<string>('AWS_S3_BUCKET');
-    this.client = new S3Client({
-      region: this.region,
-      credentials: {
-        accessKeyId: this.configService.getOrThrow<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.getOrThrow<string>(
-          'AWS_SECRET_ACCESS_KEY',
-        ),
-      },
-    });
+    this.client = new S3Client({ region: this.region });
   }
 
   async upload(
