@@ -7,3 +7,13 @@ output "security_group_id" {
   description = "EB 인스턴스 보안 그룹 ID (RDS 인바운드 허용에 사용)"
   value       = aws_security_group.eb.id
 }
+
+output "app_name" {
+  description = "EB 애플리케이션 이름"
+  value       = aws_elastic_beanstalk_application.api.name
+}
+
+output "env_name" {
+  description = "EB 환경 이름"
+  value       = aws_elastic_beanstalk_environment.prod.name
+}
