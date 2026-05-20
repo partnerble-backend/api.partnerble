@@ -41,5 +41,5 @@ variable "github_repo" {
 variable "github_branch" {
   description = "파이프라인 트리거 브랜치"
   type        = string
-  default     = "dev"
+  default     = "main"
 }
