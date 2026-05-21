@@ -44,12 +44,6 @@ resource "aws_iam_role_policy" "s3_ses" {
         Effect   = "Allow"
         Action   = ["ses:SendEmail", "ses:SendRawEmail"]
         Resource = "*"
-      },
-      {
-        Sid      = "EIPAssociate"
-        Effect   = "Allow"
-        Action   = ["ec2:AssociateAddress", "ec2:DescribeAddresses"]
-        Resource = "*"
       }
     ]
   })

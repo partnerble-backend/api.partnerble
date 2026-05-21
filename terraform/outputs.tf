@@ -13,11 +13,6 @@ output "eb_environment_url" {
   value       = module.eb.environment_url
 }
 
-output "eb_eip" {
-  description = "EB 고정 Elastic IP — Cloudflare A 레코드에 등록"
-  value       = module.eb.eip_public_ip
-}
-
 output "s3_bucket_name" {
   description = "업로드용 S3 버킷 이름"
   value       = module.s3.bucket_name

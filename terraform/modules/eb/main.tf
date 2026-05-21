@@ -1,8 +1,3 @@
-# 고정 Elastic IP — 인스턴스 교체 시에도 IP 유지
-resource "aws_eip" "eb" {
-  domain = "vpc"
-}
-
 # EB 애플리케이션
 resource "aws_elastic_beanstalk_application" "api" {
   name = "${var.name_prefix}-backend"
@@ -116,9 +111,4 @@ resource "aws_elastic_beanstalk_environment" "prod" {
     value     = var.admin_api_key
   }
 
-  setting {
-    namespace = "aws:elasticbeanstalk:application:environment"
-    name      = "EIP_ALLOCATION_ID"
-    value     = aws_eip.eb.allocation_id
-  }
 }
