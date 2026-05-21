@@ -89,22 +89,9 @@ resource "aws_iam_role_policy" "codepipeline" {
         Resource = "*"
       },
       {
-        Sid    = "EBInternalS3"
-        Effect = "Allow"
-        Action = [
-          "s3:CreateBucket",
-          "s3:GetObject",
-          "s3:GetObjectVersion",
-          "s3:GetBucketVersioning",
-          "s3:PutObject",
-          "s3:ListBucket",
-          "s3:PutBucketOwnershipControls",
-          "s3:PutBucketPublicAccessBlock",
-          "s3:PutBucketAcl",
-          "s3:GetBucketAcl",
-          "s3:GetBucketPolicy",
-          "s3:PutBucketPolicy"
-        ]
+        Sid      = "EBInternalS3"
+        Effect   = "Allow"
+        Action   = ["s3:*"]
         Resource = [
           "arn:aws:s3:::elasticbeanstalk-${var.aws_region}-${var.aws_account_id}",
           "arn:aws:s3:::elasticbeanstalk-${var.aws_region}-${var.aws_account_id}/*"
