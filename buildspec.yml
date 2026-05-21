@@ -15,6 +15,7 @@ phases:
     commands:
       - docker push $IMAGE_TAG_SHA
       - printf '{"AWSEBDockerrunVersion":"1","Image":{"Name":"%s","Update":"true"},"Ports":[{"ContainerPort":3000,"HostPort":80}]}' $IMAGE_TAG_SHA > Dockerrun.aws.json
-      - aws s3 cp Dockerrun.aws.json s3://$S3_BUCKET/deployments/$COMMIT_SHA/Dockerrun.aws.json
-      - aws elasticbeanstalk create-application-version --application-name $EB_APP_NAME --version-label $COMMIT_SHA --source-bundle S3Bucket=$S3_BUCKET,S3Key=deployments/$COMMIT_SHA/Dockerrun.aws.json
-      - aws elasticbeanstalk update-environment --application-name $EB_APP_NAME --environment-name $EB_ENV_NAME --version-label $COMMIT_SHA
+
+artifacts:
+  files:
+    - Dockerrun.aws.json
