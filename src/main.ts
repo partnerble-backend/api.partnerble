@@ -15,7 +15,10 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api');
-  app.enableCors();
+  app.enableCors({
+    origin: ['https://partnerble.com', 'http://localhost:3000'],
+    credentials: true,
+  });
 
   if (process.env.SWAGGER_ENABLED === 'true') {
     const config = new DocumentBuilder()
