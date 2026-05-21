@@ -97,7 +97,13 @@ resource "aws_iam_role_policy" "codepipeline" {
           "s3:GetObjectVersion",
           "s3:GetBucketVersioning",
           "s3:PutObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:PutBucketOwnershipControls",
+          "s3:PutBucketPublicAccessBlock",
+          "s3:PutBucketAcl",
+          "s3:GetBucketAcl",
+          "s3:GetBucketPolicy",
+          "s3:PutBucketPolicy"
         ]
         Resource = [
           "arn:aws:s3:::elasticbeanstalk-${var.aws_region}-${var.aws_account_id}",
