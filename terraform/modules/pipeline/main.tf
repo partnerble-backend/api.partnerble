@@ -96,6 +96,24 @@ resource "aws_iam_role_policy" "codepipeline" {
           "arn:aws:s3:::elasticbeanstalk-${var.aws_region}-${var.aws_account_id}",
           "arn:aws:s3:::elasticbeanstalk-${var.aws_region}-${var.aws_account_id}/*"
         ]
+      },
+      {
+        Sid    = "EBCloudFormation"
+        Effect = "Allow"
+        Action = ["cloudformation:*"]
+        Resource = "arn:aws:cloudformation:${var.aws_region}:${var.aws_account_id}:stack/awseb-*"
+      },
+      {
+        Sid    = "EBSupporting"
+        Effect = "Allow"
+        Action = [
+          "ec2:*",
+          "autoscaling:*",
+          "elasticloadbalancing:*",
+          "sns:*",
+          "iam:PassRole"
+        ]
+        Resource = "*"
       }
     ]
   })
