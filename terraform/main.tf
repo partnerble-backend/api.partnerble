@@ -56,3 +56,16 @@ module "rds" {
   subnet_ids  = data.aws_subnets.default.ids
   eb_sg_id    = module.eb.security_group_id
 }
+
+module "pipeline" {
+  source         = "./modules/pipeline"
+  name_prefix    = local.name_prefix
+  aws_region     = var.aws_region
+  aws_account_id = var.aws_account_id
+  ecr_repo_name  = module.ecr.repository_name
+  eb_app_name    = module.eb.app_name
+  eb_env_name    = module.eb.env_name
+  github_owner   = var.github_owner
+  github_repo    = var.github_repo
+  github_branch  = var.github_branch
+}
