@@ -207,3 +207,56 @@ export class ApplicationListResponseDto extends PaginatedResponseDto<Application
 - ⚠️ **Ask first:** 새 npm 패키지 설치, Prisma 스키마 변경, 외부 서비스 연동 추가
 - 🚫 **Never:** `pnpm build`를 에이전트 세션 중 실행, `.env*` 파일 커밋, `any` 타입 사용
 - 🚫 **Never:** `main` 브랜치에 직접 push 또는 머지 — 관리자 전용
+
+## Infrastructure Operations Protocol
+
+인프라·배포 관련 작업(AWS CLI, Docker, Terraform)은 에이전트가 직접 실행하지 않는다.
+
+### 원칙
+
+**에이전트의 역할:** 현재 상태 설명 + 다음 명령어 제안 + 명령어 목적 설명  
+**관리자의 역할:** 명령어를 직접 터미널에서 실행 → 결과를 에이전트에게 공유
+
+이 원칙은 다음 이유로 적용한다:
+- 에이전트가 반복적으로 명령을 실행하면 토큰을 과소비한다
+- 관리자가 어떤 단계를 진행 중인지 파악하기 어렵다
+- 인프라 명령의 실행 권한과 판단 권한은 관리자에게 있다
+
+### 제안 포맷
+
+에이전트는 명령어를 제안할 때 항상 아래 구조를 따른다:
+
+```
+**현재 위치:** [배포 단계 중 어디에 있는지]
+
+**다음 단계:** [무엇을 해야 하는지]
+
+**명령어:**
+\`\`\`bash
+<실행할 명령어>
+\`\`\`
+
+**이 명령어가 하는 일:** [한 줄 설명]
+
+**예상 결과:** [성공 시 어떤 출력이 나와야 하는지]
+```
+
+### 대상 명령어 범위
+
+아래 명령어는 반드시 관리자가 직접 실행한다:
+
+| 범주 | 예시 |
+|---|---|
+| AWS CLI | `aws ecr ...`, `aws elasticbeanstalk ...`, `aws s3 ...` |
+| Docker | `docker build`, `docker push`, `docker run` |
+| Terraform | `terraform apply`, `terraform plan`, `terraform destroy` |
+| Git push / PR | `git push`, `gh pr create` |
+
+### 예외 — 에이전트가 직접 실행 가능한 명령어
+
+| 범주 | 예시 |
+|---|---|
+| 코드 품질 | `pnpm lint`, `pnpm test` |
+| Prisma 로컬 | `pnpm prisma generate` |
+| 파일 읽기 | `ls`, `cat`, `find`, `grep` |
+| Git 로컬 조회 | `git status`, `git log`, `git diff` |

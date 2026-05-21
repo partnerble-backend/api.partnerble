@@ -22,12 +22,6 @@ export class NotificationService {
   ) {
     this.sesClient = new SESClient({
       region: configService.getOrThrow<string>('AWS_REGION'),
-      credentials: {
-        accessKeyId: configService.getOrThrow<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: configService.getOrThrow<string>(
-          'AWS_SECRET_ACCESS_KEY',
-        ),
-      },
     });
     this.fromEmail = configService.getOrThrow<string>('SES_FROM_EMAIL');
     this.operatorEmail = configService.getOrThrow<string>('OPERATOR_EMAIL');

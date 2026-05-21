@@ -1,0 +1,24 @@
+# ============================================================
+# terraform.tfvars 작성 템플릿
+# 이 파일을 복사해 terraform.tfvars를 만들고 값을 채운 뒤 사용하세요.
+#   cp terraform.tfvars.example terraform.tfvars
+#
+# ⚠️  terraform.tfvars는 .gitignore에 포함되어 있습니다.
+#     절대 git에 커밋하지 마세요.
+# ============================================================
+
+aws_region     = "ap-northeast-2"
+project        = "partnerble"
+environment    = "prod"
+aws_account_id = "REPLACE_WITH_AWS_ACCOUNT_ID"   # aws sts get-caller-identity --query Account
+
+operator_email = "REPLACE_WITH_OPERATOR_EMAIL"   # 알림 수신 이메일 (예: neo.lee@partnerble.com)
+ses_from_email = "REPLACE_WITH_SES_FROM_EMAIL"   # 발신자 이메일 (SES 인증된 주소)
+
+db_password   = "REPLACE_WITH_DB_PASSWORD"
+admin_api_key = "REPLACE_WITH_ADMIN_API_KEY"     # openssl rand -hex 32
+
+# ── CI/CD ─────────────────────────────────────────────────────────────────────
+github_owner  = "REPLACE_WITH_GITHUB_ORG_OR_USER"   # 예: partnerble-backend
+github_repo   = "REPLACE_WITH_REPO_NAME"             # 예: api.partnerble
+github_branch = "main"
