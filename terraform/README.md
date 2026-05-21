@@ -55,10 +55,11 @@ cp terraform.tfvars.example terraform.tfvars
 aws_account_id = "430287291108"        # 변경 금지
 operator_email = "neo.lee@partnerble.com"
 ses_from_email = "no-reply@partnerble.com"
-# 나머지 값은 기본값 유지
+db_password    = "실제DB비밀번호"
+admin_api_key  = "실제API키값"
 ```
 
-> `db_password`, `admin_api_key`는 이 파일에 적지 않습니다. apply 시 환경변수로 주입합니다.
+> `terraform.tfvars`는 `.gitignore`에 등록되어 git에 커밋되지 않습니다. 절대 직접 커밋하지 마세요.
 
 ### Terraform 초기화
 
@@ -251,8 +252,6 @@ terraform plan 결과에서 destroy가 발생하는지 확인하고 알려줘.
 
 ```
 직전에 확인한 plan을 apply해줘.
-DB 비밀번호: [값] (또는 "환경변수로 주입할게")
-Admin API 키: [값]
 ```
 
 ---
@@ -306,9 +305,7 @@ terraform state show module.rds.aws_db_instance.main
 terraform state show module.eb.aws_elastic_beanstalk_environment.prod
 
 # 변경 예정 내용 미리보기 (apply 없이)
-terraform plan -var-file="environments/prod/terraform.tfvars" \
-  -var="db_password=$TF_VAR_db_password" \
-  -var="admin_api_key=$TF_VAR_admin_api_key"
+terraform plan -var-file="environments/prod/terraform.tfvars"
 
 # apply 이후 주요 정보 확인 (ECR URL, RDS 엔드포인트 등)
 terraform output
@@ -373,19 +370,14 @@ terraform apply -auto-approve
 
 항상 plan → 검토 → apply 순서를 지킵니다.
 
-### 민감한 값을 tfvars 파일에 기재 금지
+### `terraform.tfvars` 파일 커밋 금지
 
-```hcl
-# ❌ 절대 금지 — git에 커밋되면 비밀번호가 노출됨
-db_password   = "실제비밀번호"
-admin_api_key = "실제키값"
-```
+`terraform.tfvars`는 DB 비밀번호, API 키 등 민감한 값을 포함합니다.
+`.gitignore`에 등록되어 있으나 **절대 직접 `git add`하지 마세요.**
 
-민감한 값은 환경변수로만 주입합니다:
 ```bash
-TF_VAR_db_password="실제비밀번호" \
-TF_VAR_admin_api_key="실제키값" \
-terraform apply -var-file="environments/prod/terraform.tfvars"
+# ❌ 절대 금지
+git add terraform/environments/prod/terraform.tfvars
 ```
 
 ---
@@ -417,18 +409,14 @@ terraform apply -var-file="environments/prod/terraform.tfvars"
 ```bash
 # 1단계: 삭제 예정 목록 확인 (실제 삭제 없음)
 terraform plan -destroy \
-  -var-file="environments/prod/terraform.tfvars" \
-  -var="db_password=$TF_VAR_db_password" \
-  -var="admin_api_key=$TF_VAR_admin_api_key"
+  -var-file="environments/prod/terraform.tfvars"
 
 # 2단계: RDS deletion_protection 해제 (에이전트에게 요청)
 # modules/rds/main.tf에서 deletion_protection = false 로 변경 후 apply
 
 # 3단계: 실제 삭제
 terraform destroy \
-  -var-file="environments/prod/terraform.tfvars" \
-  -var="db_password=$TF_VAR_db_password" \
-  -var="admin_api_key=$TF_VAR_admin_api_key"
+  -var-file="environments/prod/terraform.tfvars"
 ```
 
 ### 부분 종료 (특정 리소스만)
