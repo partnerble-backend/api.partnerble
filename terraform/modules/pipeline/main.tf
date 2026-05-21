@@ -75,6 +75,19 @@ resource "aws_iam_role_policy" "codepipeline" {
         Effect   = "Allow"
         Action   = ["codestar-connections:UseConnection"]
         Resource = aws_codestarconnections_connection.github.arn
+      },
+      {
+        Sid    = "EBDeploy"
+        Effect = "Allow"
+        Action = [
+          "elasticbeanstalk:CreateApplicationVersion",
+          "elasticbeanstalk:UpdateEnvironment",
+          "elasticbeanstalk:DescribeEnvironments",
+          "elasticbeanstalk:DescribeApplicationVersions",
+          "s3:GetObject",
+          "s3:GetObjectVersion"
+        ]
+        Resource = "*"
       }
     ]
   })
@@ -117,16 +130,6 @@ resource "aws_iam_role_policy" "codebuild" {
           "ecr:PutImage"
         ]
         Resource = "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/${var.ecr_repo_name}"
-      },
-      {
-        Sid    = "EBDeploy"
-        Effect = "Allow"
-        Action = [
-          "elasticbeanstalk:CreateApplicationVersion",
-          "elasticbeanstalk:UpdateEnvironment",
-          "elasticbeanstalk:DescribeEnvironments"
-        ]
-        Resource = "*"
       },
       {
         Sid    = "S3Artifacts"
@@ -176,18 +179,6 @@ resource "aws_codebuild_project" "api" {
       name  = "ECR_REPO_URI"
       value = local.ecr_repo_uri
     }
-    environment_variable {
-      name  = "EB_APP_NAME"
-      value = var.eb_app_name
-    }
-    environment_variable {
-      name  = "EB_ENV_NAME"
-      value = var.eb_env_name
-    }
-    environment_variable {
-      name  = "S3_BUCKET"
-      value = aws_s3_bucket.pipeline_artifacts.bucket
-    }
   }
 }
 
@@ -233,6 +224,23 @@ resource "aws_codepipeline" "api" {
 
       configuration = {
         ProjectName = aws_codebuild_project.api.name
+      }
+    }
+  }
+
+  stage {
+    name = "Deploy"
+    action {
+      name            = "Deploy_to_EB"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ElasticBeanstalk"
+      version         = "1"
+      input_artifacts = ["build_output"]
+
+      configuration = {
+        ApplicationName = var.eb_app_name
+        EnvironmentName = var.eb_env_name
       }
     }
   }
