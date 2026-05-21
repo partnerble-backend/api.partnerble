@@ -182,18 +182,18 @@ ses_from_email = "no-reply@partnerble.com"  # 발신자 이메일 ← 변경 가
 
 ### 처음 인프라를 만들 때
 
-```
-1. terraform init   → Terraform 초기화 (AWS provider 다운로드)
-2. terraform plan   → 무엇이 만들어질지 미리보기
-3. terraform apply  → 실제로 AWS에 리소스 생성
+```bash
+1. terraform init
+2. terraform plan -var-file="environments/prod/terraform.tfvars"
+3. terraform apply -var-file="environments/prod/terraform.tfvars"
 ```
 
 ### 인프라를 수정할 때 (예: 이메일 주소 변경)
 
-```
+```bash
 1. terraform.tfvars 수정
-2. terraform plan   → 변경사항 미리보기 (기존 리소스에 영향 확인)
-3. terraform apply  → 변경사항 반영
+2. terraform plan -var-file="environments/prod/terraform.tfvars"
+3. terraform apply -var-file="environments/prod/terraform.tfvars"
 ```
 
 ### plan 결과 읽는 법
