@@ -102,10 +102,14 @@ terraform init
 ## 2. 이 프로젝트의 인프라 구조
 
 ```
-GitHub (main 브랜치)
-    ↓ Docker 빌드 & 푸시
-AWS ECR (컨테이너 이미지 저장소)
-    ↓ 배포
+GitHub (main 브랜치 push) ← dev 브랜치 push는 배포에 영향 없음
+    ↓
+AWS CodePipeline (Source → Build)
+    ↓
+AWS CodeBuild (Docker linux/amd64 빌드 · ECR push · EB 배포)
+    ↓
+AWS ECR (컨테이너 이미지 저장소, commit SHA 7자리 태그)
+    ↓
 AWS Elastic Beanstalk (NestJS API 실행 환경)
     ├── IAM 역할 (AWS 서비스 접근 권한)
     ├── AWS RDS PostgreSQL (데이터베이스)
@@ -123,6 +127,7 @@ AWS Elastic Beanstalk (NestJS API 실행 환경)
 | `ecr` | ECR 리포지토리, 수명주기 정책 | Docker 이미지 저장소 |
 | `rds` | RDS 인스턴스, 보안 그룹, 서브넷 그룹 | PostgreSQL 데이터베이스 |
 | `eb` | EB 애플리케이션, 환경, 보안 그룹 | NestJS API 실행 |
+| `pipeline` | CodePipeline, CodeBuild, IAM, S3 아티팩트 버킷, CodeStar Connection | main 브랜치 push 시 자동 빌드·배포 |
 
 ---
 
@@ -143,7 +148,8 @@ terraform/
     ├── s3/                          ← S3 버킷 설정
     ├── ecr/                         ← ECR 설정
     ├── rds/                         ← RDS 데이터베이스 설정
-    └── eb/                          ← Elastic Beanstalk 설정
+    ├── eb/                          ← Elastic Beanstalk 설정
+    └── pipeline/                    ← CodePipeline CI/CD 설정
 ```
 
 ### 관리자가 실제로 봐야 하는 파일
@@ -327,7 +333,18 @@ aws rds describe-db-instances \
 # ECR 리포지토리 확인
 aws ecr describe-repositories \
   --query "repositories[?repositoryName=='partnerble-prod-api']"
+
+# CodePipeline 실행 상태 확인
+aws codepipeline get-pipeline-state --name partnerble-prod-pipeline \
+  --query "stageStates[*].{Stage:stageName,Status:latestExecution.status}"
+
+# CodeStar Connection 상태 확인 (AVAILABLE이어야 파이프라인 실행 가능)
+aws codestar-connections list-connections \
+  --query "Connections[?ConnectionName=='partnerble-prod-github'].{Name:ConnectionName,Status:ConnectionStatus}"
 ```
+
+> ⚠️ **CodeStar Connection:** `terraform apply` 직후 `PENDING` 상태로 생성됩니다.
+> AWS 콘솔 → Developer Tools → Connections에서 OAuth 승인을 완료해야 파이프라인이 실행됩니다.
 
 ---
 

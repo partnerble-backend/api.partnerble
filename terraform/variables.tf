@@ -48,3 +48,21 @@ variable "admin_api_key" {
   type        = string
   sensitive   = true
 }
+
+# ── CI/CD ──────────────────────────────────────────────────────────────────────
+
+variable "github_owner" {
+  description = "GitHub 조직 또는 사용자명"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub 리포지토리명"
+  type        = string
+}
+
+variable "github_branch" {
+  description = "파이프라인 트리거 브랜치"
+  type        = string
+  default     = "dev"
+}
