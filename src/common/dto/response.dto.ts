@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ListResponseDto<T> {
+  @ApiProperty({ isArray: true })
   items: T[];
 
   @ApiProperty()
@@ -8,6 +9,7 @@ export class ListResponseDto<T> {
 }
 
 export class PaginatedResponseDto<T> {
+  @ApiProperty({ isArray: true })
   items: T[];
 
   @ApiProperty()

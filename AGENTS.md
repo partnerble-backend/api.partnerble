@@ -154,14 +154,22 @@ export class ApplicationDto {
 
 ```ts
 // ✅ List 응답 예시
+import { ApiProperty } from '@nestjs/swagger';
 import { ListResponseDto } from '../../common/dto/response.dto';
 
-export class RecruitListResponseDto extends ListResponseDto<RecruitListItemDto> {}
+export class RecruitListResponseDto extends ListResponseDto<RecruitListItemDto> {
+  @ApiProperty({ type: () => [RecruitListItemDto] })
+  items: RecruitListItemDto[];
+}
 
 // ✅ Paginated 응답 예시
+import { ApiProperty } from '@nestjs/swagger';
 import { PaginatedResponseDto } from '../../common/dto/response.dto';
 
-export class ApplicationListResponseDto extends PaginatedResponseDto<ApplicationListItemDto> {}
+export class ApplicationListResponseDto extends PaginatedResponseDto<ApplicationListItemDto> {
+  @ApiProperty({ type: () => [ApplicationListItemDto] })
+  items: ApplicationListItemDto[];
+}
 ```
 
 **Swagger decoration rules:**
