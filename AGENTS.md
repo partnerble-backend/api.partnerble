@@ -109,7 +109,9 @@ export class ApplicationDto {
 
 - 모든 request body는 DTO 클래스로 정의한다
 - `class-validator` 데코레이터로 유효성 검사를 명시한다
-- Response DTO는 Prisma 모델을 그대로 노출하지 않고 별도 정의한다
+- Response DTO는 **단일 Prisma 모델로 표현할 수 없을 때만** 별도 정의한다
+  - ✅ 별도 정의 필요: 복수 모델 조인 (예: Partner + Account 합산), 계산 필드, 필드 재구성
+  - ✅ Prisma 생성 타입 그대로 사용: 단일 모델을 변환 없이 반환하는 경우 (예: POST 후 생성된 레코드 반환)
 - 모든 DTO 프로퍼티에 `@ApiProperty()` 또는 `@ApiPropertyOptional()`을 추가한다
   - 문자열: `@ApiProperty({ example: '...' })`
   - 숫자: `@ApiProperty({ example: 0 })`
