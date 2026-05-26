@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { S3Module } from './common/s3/s3.module';
 import { ResumeModule } from './resume/resume.module';
 import { RecruitModule } from './recruit/recruit.module';
+import { AccountModule } from './account/account.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RecruitModule } from './recruit/recruit.module';
     S3Module,
     ResumeModule,
     RecruitModule,
+    AccountModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
