@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Account } from '@prisma/client';
 import { AccountService } from './account.service';
+import { AccountResponseDto } from './dto/account-response.dto';
 import { CreateAccountDto } from './dto/create-account.dto';
 
 @ApiTags('accounts')
@@ -19,13 +19,17 @@ export class AccountController {
     • type이 FOUNDER인 경우 Account만 생성됩니다`,
   })
   @ApiBody({ type: CreateAccountDto })
-  @ApiResponse({ status: 201, description: '계정 등록 성공' })
+  @ApiResponse({
+    status: 201,
+    description: '계정 등록 성공',
+    type: AccountResponseDto,
+  })
   @ApiResponse({
     status: 400,
     description:
       '유효성 검사 실패 (PARTNER 타입에 interestTags/industry 미전달 포함)',
   })
-  create(@Body() dto: CreateAccountDto): Promise<Account> {
+  create(@Body() dto: CreateAccountDto): Promise<AccountResponseDto> {
     return this.accountService.create(dto);
   }
 }
