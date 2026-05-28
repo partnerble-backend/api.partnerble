@@ -16,10 +16,10 @@ export class PartnerResponseDto {
   @ApiProperty({ nullable: true, example: '010-1234-5678' })
   phone: string | null;
 
-  @ApiProperty({ type: [String], example: ['마케팅', 'IT'] })
+  @ApiProperty({ type: [String], example: ['SNS 운영', '영상 편집', '디자인'] })
   interestTags: string[];
 
-  @ApiProperty({ example: 'IT/스타트업' })
+  @ApiProperty({ example: '뷰티/코스메틱' })
   industry: string;
 
   @ApiProperty({ type: String, format: 'date-time' })

@@ -33,14 +33,17 @@ export class CreateAccountDto {
   @IsEnum(AccountType)
   type: AccountType;
 
-  @ApiPropertyOptional({ type: [String], example: ['마케팅', 'IT'] })
+  @ApiPropertyOptional({
+    type: [String],
+    example: ['SNS 운영', '영상 편집', '디자인'],
+  })
   @ValidateIf((o) => o.type === AccountType.PARTNER)
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty()
   interestTags?: string[];
 
-  @ApiPropertyOptional({ example: 'IT/스타트업' })
+  @ApiPropertyOptional({ example: '뷰티/코스메틱' })
   @ValidateIf((o) => o.type === AccountType.PARTNER)
   @IsString()
   @IsNotEmpty()
