@@ -133,6 +133,32 @@ export class NotificationService {
     }
   }
 
+  async notifyPartnerRegistration(data: {
+    partnerId: string;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    interestTags: string[];
+    industry: string;
+  }): Promise<void> {
+    const subject = `[파트너블] 새 파트너 등록 — ${data.name}`;
+    const body = [
+      `이름: ${data.name}`,
+      `이메일: ${data.email ?? '없음'}`,
+      `연락처: ${data.phone ?? '없음'}`,
+      `업종: ${data.industry}`,
+      `관심 분야: ${data.interestTags.join(', ')}`,
+    ].join('\n');
+
+    try {
+      await this.sendEmail(this.operatorEmail, subject, body);
+    } catch (error) {
+      this.logger.error(
+        `Partner registration notification failed for partner ${data.partnerId}: ${(error as Error).message}`,
+      );
+    }
+  }
+
   private async sendEmail(
     to: string,
     subject: string,
