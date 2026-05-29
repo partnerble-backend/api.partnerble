@@ -8,6 +8,7 @@ import { S3Module } from './common/s3/s3.module';
 import { ResumeModule } from './resume/resume.module';
 import { RecruitModule } from './recruit/recruit.module';
 import { AccountModule } from './account/account.module';
+import { FounderModule } from './founder/founder.module';
 import { PartnerModule } from './partner/partner.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { PartnerModule } from './partner/partner.module';
     ResumeModule,
     RecruitModule,
     AccountModule,
+    FounderModule,
     PartnerModule,
   ],
   providers: [
