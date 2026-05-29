@@ -1,5 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AccountType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -30,21 +29,10 @@ export class RecruitService {
         : FRONTEND_URL_LOCAL;
   }
 
-  async create(
-    dto: CreateRecruitDto,
-  ): Promise<{ isNew: boolean; recruit: RecruitResponseDto }> {
+  async create(dto: CreateRecruitDto): Promise<RecruitResponseDto> {
     const existingAccount = await this.prisma.account.findUnique({
       where: { email: dto.email },
-      include: { recruits: { orderBy: { createdAt: 'desc' }, take: 1 } },
     });
-
-    if (existingAccount && existingAccount.recruits.length > 0) {
-      const r = existingAccount.recruits[0];
-      return {
-        isNew: false,
-        recruit: { id: r.id, isActive: r.isActive, createdAt: r.createdAt },
-      };
-    }
 
     const { recruit } = await this.prisma.$transaction(async (tx) => {
       const accountId =
@@ -111,12 +99,9 @@ export class RecruitService {
       );
 
     return {
-      isNew: true,
-      recruit: {
-        id: recruit.id,
-        isActive: recruit.isActive,
-        createdAt: recruit.createdAt,
-      },
+      id: recruit.id,
+      isActive: recruit.isActive,
+      createdAt: recruit.createdAt,
     };
   }
 

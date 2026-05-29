@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
@@ -7,7 +15,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Response } from 'express';
 import { RecruitService } from './recruit.service';
 import { CreateRecruitDto } from './dto/create-recruit.dto';
 import { RecruitResponseDto } from './dto/recruit-response.dto';
@@ -34,19 +41,10 @@ export class RecruitController {
     description: '공고 생성 성공',
     type: RecruitResponseDto,
   })
-  @ApiResponse({
-    status: 200,
-    description: '이미 등록된 공고',
-    type: RecruitResponseDto,
-  })
   @ApiResponse({ status: 400, description: '유효하지 않은 요청 데이터' })
-  async create(
-    @Body() dto: CreateRecruitDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<RecruitResponseDto> {
-    const { isNew, recruit } = await this.recruitService.create(dto);
-    res.status(isNew ? 201 : 200);
-    return recruit;
+  @HttpCode(201)
+  create(@Body() dto: CreateRecruitDto): Promise<RecruitResponseDto> {
+    return this.recruitService.create(dto);
   }
 
   @Get()
