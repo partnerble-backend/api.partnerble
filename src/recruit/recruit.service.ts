@@ -1,6 +1,13 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AccountType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../common/notification/notification.service';
+import {
+  FRONTEND_URL_LOCAL,
+  FRONTEND_URL_PROD,
+} from '../common/constants/app.constants';
 import { CreateRecruitDto } from './dto/create-recruit.dto';
 import { RecruitResponseDto } from './dto/recruit-response.dto';
 import { RecruitListQueryDto } from './dto/recruit-list-query.dto';
@@ -10,25 +17,52 @@ import { RecruitDetailResponseDto } from './dto/recruit-detail-response.dto';
 @Injectable()
 export class RecruitService {
   private readonly logger = new Logger(RecruitService.name);
+  private readonly frontendUrl: string;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.frontendUrl =
+      configService.get('NODE_ENV') === 'production'
+        ? FRONTEND_URL_PROD
+        : FRONTEND_URL_LOCAL;
+  }
 
-  async create(dto: CreateRecruitDto): Promise<RecruitResponseDto> {
+  async create(
+    dto: CreateRecruitDto,
+  ): Promise<{ isNew: boolean; recruit: RecruitResponseDto }> {
+    const existingAccount = await this.prisma.account.findUnique({
+      where: { email: dto.email },
+      include: { recruits: { orderBy: { createdAt: 'desc' }, take: 1 } },
+    });
+
+    if (existingAccount && existingAccount.recruits.length > 0) {
+      const r = existingAccount.recruits[0];
+      return {
+        isNew: false,
+        recruit: { id: r.id, isActive: r.isActive, createdAt: r.createdAt },
+      };
+    }
+
     const { recruit } = await this.prisma.$transaction(async (tx) => {
-      const account = await tx.account.create({
-        data: {
-          name: dto.name,
-          email: dto.email,
-          phone: dto.phone,
-          type: 'FOUNDER',
-        },
-      });
+      const accountId =
+        existingAccount?.id ??
+        (
+          await tx.account.create({
+            data: {
+              name: dto.name,
+              email: dto.email,
+              phone: dto.phone,
+              type: AccountType.FOUNDER,
+            },
+          })
+        ).id;
+
       const recruit = await tx.recruit.create({
         data: {
-          accountId: account.id,
+          accountId,
           isActive: false,
           companyName: dto.companyName,
           location: dto.location,
@@ -44,24 +78,45 @@ export class RecruitService {
       return { recruit };
     });
 
+    const recruitLink = `${this.frontendUrl}/recruits/${recruit.id}`;
+
     void this.notificationService
-      .notifyRecruitSubmission({
+      .notifyRecruitRegisteredToFounder({
         recruitId: recruit.id,
-        companyName: recruit.companyName,
-        roleDesc: recruit.roleDesc,
-        name: dto.name,
-        email: dto.email,
+        founderEmail: dto.email,
+        founderName: dto.name,
+        companyName: dto.companyName,
+        roleDesc: dto.roleDesc,
+        recruitLink,
       })
       .catch((err: Error) =>
         this.logger.error(
-          `Notification failed for recruit ${recruit.id}: ${err.message}`,
+          `Founder notification failed for recruit ${recruit.id}: ${err.message}`,
+        ),
+      );
+
+    void this.notificationService
+      .notifyRecruitSubmission({
+        recruitId: recruit.id,
+        companyName: dto.companyName,
+        roleDesc: dto.roleDesc,
+        name: dto.name,
+        email: dto.email,
+        recruitLink,
+      })
+      .catch((err: Error) =>
+        this.logger.error(
+          `Operator notification failed for recruit ${recruit.id}: ${err.message}`,
         ),
       );
 
     return {
-      id: recruit.id,
-      isActive: recruit.isActive,
-      createdAt: recruit.createdAt,
+      isNew: true,
+      recruit: {
+        id: recruit.id,
+        isActive: recruit.isActive,
+        createdAt: recruit.createdAt,
+      },
     };
   }
 

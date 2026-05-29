@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
@@ -15,6 +7,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import { RecruitService } from './recruit.service';
 import { CreateRecruitDto } from './dto/create-recruit.dto';
 import { RecruitResponseDto } from './dto/recruit-response.dto';
@@ -28,12 +21,12 @@ export class RecruitController {
   constructor(private readonly recruitService: RecruitService) {}
 
   @Post()
-  @HttpCode(201)
   @ApiOperation({
     summary: '공고 생성',
     operationId: 'createRecruit',
     description: `새 채용 공고를 생성합니다.
-    • 생성 후 운영자에게 이메일 알림이 발송됩니다`,
+    • 생성 후 창업자 및 운영자에게 이메일 알림이 발송됩니다
+    • 동일 이메일로 이미 등록된 공고가 있으면 200을 반환합니다`,
   })
   @ApiBody({ type: CreateRecruitDto })
   @ApiResponse({
@@ -41,9 +34,19 @@ export class RecruitController {
     description: '공고 생성 성공',
     type: RecruitResponseDto,
   })
+  @ApiResponse({
+    status: 200,
+    description: '이미 등록된 공고',
+    type: RecruitResponseDto,
+  })
   @ApiResponse({ status: 400, description: '유효하지 않은 요청 데이터' })
-  create(@Body() dto: CreateRecruitDto): Promise<RecruitResponseDto> {
-    return this.recruitService.create(dto);
+  async create(
+    @Body() dto: CreateRecruitDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<RecruitResponseDto> {
+    const { isNew, recruit } = await this.recruitService.create(dto);
+    res.status(isNew ? 201 : 200);
+    return recruit;
   }
 
   @Get()

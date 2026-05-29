@@ -36,7 +36,7 @@ export class CreateRecruitDto {
   @IsNotEmpty()
   location: string;
 
-  @ApiProperty({ example: 'IT/스타트업' })
+  @ApiProperty({ example: '뷰티/코스메틱' })
   @IsString()
   @IsNotEmpty()
   industry: string;
@@ -65,7 +65,7 @@ export class CreateRecruitDto {
   @IsNotEmpty()
   duration: string;
 
-  @ApiPropertyOptional({ type: [String], example: ['마케팅', 'SNS'] })
+  @ApiPropertyOptional({ type: [String], example: ['SNS 운영', '영상 편집'] })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
