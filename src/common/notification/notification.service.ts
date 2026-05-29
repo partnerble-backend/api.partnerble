@@ -115,6 +115,7 @@ export class NotificationService {
     roleDesc: string;
     name: string;
     email: string;
+    recruitLink: string;
   }): Promise<void> {
     const subject = `[파트너블] 새 공고 신청 — ${data.companyName}`;
     const body = [
@@ -122,6 +123,7 @@ export class NotificationService {
       `역할: ${data.roleDesc}`,
       `신청자 이름: ${data.name}`,
       `신청자 이메일: ${data.email}`,
+      `공고 링크: ${data.recruitLink}`,
     ].join('\n');
 
     try {
@@ -129,6 +131,38 @@ export class NotificationService {
     } catch (error) {
       this.logger.error(
         `Recruit notification failed for recruit ${data.recruitId}: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  async notifyRecruitRegisteredToFounder(data: {
+    recruitId: string;
+    founderEmail: string;
+    founderName: string;
+    companyName: string;
+    roleDesc: string;
+    recruitLink: string;
+  }): Promise<void> {
+    const subject = `[파트너블] 공고가 등록되었습니다 — ${data.companyName}`;
+    const body = [
+      `안녕하세요, ${data.founderName}님.`,
+      ``,
+      `아래 공고가 정상적으로 접수되었습니다.`,
+      ``,
+      `회사명: ${data.companyName}`,
+      `역할: ${data.roleDesc}`,
+      ``,
+      `공고 링크: ${data.recruitLink}`,
+      ``,
+      `검토 후 활성화되면 파트너에게 공개됩니다.`,
+      `파트너블을 이용해 주셔서 감사합니다.`,
+    ].join('\n');
+
+    try {
+      await this.sendEmail(data.founderEmail, subject, body);
+    } catch (error) {
+      this.logger.error(
+        `Founder notification failed for recruit ${data.recruitId}: ${(error as Error).message}`,
       );
     }
   }
