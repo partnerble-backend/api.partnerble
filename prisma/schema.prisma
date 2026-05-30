@@ -81,6 +81,8 @@ enum BudgetUnit {
   DAILY
   /// 프로젝트 단위
   PER_PROJECT
+  /// 시급
+  HOURLY
 
   @@map("budget_unit")
 }
