@@ -28,7 +28,6 @@ export class PartnerService {
         data: {
           accountId: account.id,
           interestTags: dto.interestTags,
-          industry: dto.industry,
         },
         include: { account: true },
       });
@@ -41,7 +40,6 @@ export class PartnerService {
         email: partner.account.email,
         phone: partner.account.phone,
         interestTags: partner.interestTags,
-        industry: partner.industry,
       })
       .catch((err: Error) =>
         this.logger.error(
@@ -56,7 +54,6 @@ export class PartnerService {
       email: partner.account.email ?? null,
       phone: partner.account.phone ?? null,
       interestTags: partner.interestTags,
-      industry: partner.industry,
       createdAt: partner.createdAt.toISOString(),
     };
   }
@@ -74,7 +71,6 @@ export class PartnerService {
       email: partner.account.email ?? null,
       phone: partner.account.phone ?? null,
       interestTags: partner.interestTags,
-      industry: partner.industry,
       createdAt: partner.createdAt.toISOString(),
     };
   }

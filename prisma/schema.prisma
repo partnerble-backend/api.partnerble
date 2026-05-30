@@ -122,7 +122,6 @@ model Partner {
   accountId    String   @unique
   account      Account  @relation(fields: [accountId], references: [id])
   interestTags String[]
-  industry     String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
