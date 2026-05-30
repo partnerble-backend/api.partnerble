@@ -216,6 +216,7 @@ export class ApplicationListResponseDto extends PaginatedResponseDto<Application
 
 - ✅ **Always:** terminology.md 준수, DTO 유효성 검사, Prisma를 통한 DB 접근, lint 통과 후 커밋
 - ⚠️ **Ask first:** 새 npm 패키지 설치, Prisma 스키마 변경, 외부 서비스 연동 추가
+- ⚠️ **Ask first (코드 수정):** 버그 원인을 먼저 설명하고, 수정 방향을 제안한 뒤 관리자 확인 후 코드를 변경한다. 원인 파악 없이 바로 코드 수정으로 넘어가지 않는다.
 - 🚫 **Never:** `pnpm build`를 에이전트 세션 중 실행, `.env*` 파일 커밋, `any` 타입 사용
 - 🚫 **Never:** `main` 브랜치에 직접 push 또는 머지 — 관리자 전용
 
