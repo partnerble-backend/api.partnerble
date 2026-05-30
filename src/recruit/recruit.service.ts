@@ -66,7 +66,7 @@ export class RecruitService {
       return { recruit };
     });
 
-    const recruitLink = `${this.frontendUrl}/recruits/${recruit.id}`;
+    const recruitLink = `${this.frontendUrl}/recruit/${recruit.id}`;
 
     void this.notificationService
       .notifyRecruitRegisteredToFounder({
