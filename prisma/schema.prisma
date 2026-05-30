@@ -22,8 +22,8 @@ model Account {
   id           String        @id @default(cuid())
   /// 이름
   name         String
-  /// 로그인 및 알림 수신용 이메일 (유니크)
-  email        String?       @unique
+  /// 알림 수신용 이메일
+  email        String?
   /// 연락처 전화번호
   phone        String?
   /// 계정 유형 (FOUNDER | PARTNER)
