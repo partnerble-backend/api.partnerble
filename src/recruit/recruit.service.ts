@@ -30,7 +30,7 @@ export class RecruitService {
   }
 
   async create(dto: CreateRecruitDto): Promise<RecruitResponseDto> {
-    const existingAccount = await this.prisma.account.findUnique({
+    const existingAccount = await this.prisma.account.findFirst({
       where: { email: dto.email },
     });
 
