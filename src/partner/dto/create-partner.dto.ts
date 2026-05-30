@@ -31,10 +31,4 @@ export class CreatePartnerDto {
   @IsString({ each: true })
   @IsNotEmpty()
   interestTags: string[];
-
-  @ApiProperty({ example: '뷰티/코스메틱' })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  industry: string;
 }
