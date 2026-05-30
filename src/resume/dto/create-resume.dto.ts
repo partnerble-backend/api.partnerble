@@ -6,6 +6,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateResumeDto {
@@ -41,6 +42,7 @@ export class CreateResumeDto {
   introduction: string;
 
   @ApiProperty({ example: true })
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   privacyAgreed: boolean;
 }
