@@ -59,17 +59,16 @@ export class ResumeController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: [
-        'recruitId',
-        'name',
-        'contact',
-        'introduction',
-        'privacyAgreed',
-      ],
+      required: ['recruitId', 'name', 'phone', 'introduction', 'privacyAgreed'],
       properties: {
         recruitId: { type: 'string', example: 'clx...' },
         name: { type: 'string', example: '홍길동' },
-        contact: { type: 'string', example: '010-1234-5678' },
+        phone: { type: 'string', example: '010-1234-5678' },
+        email: {
+          type: 'string',
+          example: 'partner@example.com',
+          description: '이메일 (선택)',
+        },
         introduction: { type: 'string', example: '안녕하세요...' },
         privacyAgreed: { type: 'boolean', example: true },
         attachment: {

@@ -1,5 +1,12 @@
-import { IsBoolean, IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateResumeDto {
   @ApiProperty({ example: 'clx...' })
@@ -18,6 +25,11 @@ export class CreateResumeDto {
   @IsNotEmpty()
   @MaxLength(100)
   phone: string;
+
+  @ApiPropertyOptional({ example: 'partner@example.com' })
+  @IsEmail()
+  @IsOptional()
+  email?: string;
 
   @ApiProperty({
     example: '안녕하세요, 마케팅 경력 3년차입니다.',

@@ -73,7 +73,8 @@ export class NotificationService {
     const body = [
       `공고명: ${recruit.roleDesc}`,
       `지원자 이름: ${partner.name}`,
-      `연락처: ${partner.phone}`,
+      `연락처: ${partner.phone ?? '없음'}`,
+      `이메일: ${partner.email ?? '없음'}`,
       `자기소개: ${introduction}`,
       `첨부파일 URL: ${attachmentUrl ?? '없음'}`,
     ].join('\n');
