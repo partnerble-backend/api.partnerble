@@ -22,10 +22,10 @@ model Account {
   id           String        @id @default(cuid())
   /// 이름
   name         String
-  /// 로그인 및 알림 수신용 이메일 (유니크)
-  email        String?       @unique
+  /// 알림 수신용 이메일
+  email        String?
   /// 연락처 전화번호
-  phone        String
+  phone        String?
   /// 계정 유형 (FOUNDER | PARTNER)
   type         AccountType
   createdAt    DateTime      @default(now())
@@ -33,6 +33,8 @@ model Account {
   recruits     Recruit[]
   /// 이 계정이 제출한 지원 목록 (PARTNER 전용)
   resumes Resume[]
+  /// 파트너 전용 프로필 (PARTNER 전용)
+  partner Partner?
 
   @@map("accounts")
 }
@@ -79,6 +81,8 @@ enum BudgetUnit {
   DAILY
   /// 프로젝트 단위
   PER_PROJECT
+  /// 시급
+  HOURLY
 
   @@map("budget_unit")
 }
@@ -112,6 +116,18 @@ model Resume {
   updatedAt       DateTime     @updatedAt
 
   @@map("resumes")
+}
+
+/// 파트너 전용 프로필 — 관심 태그, 업종 등 파트너 추가 정보
+model Partner {
+  id           String   @id @default(cuid())
+  accountId    String   @unique
+  account      Account  @relation(fields: [accountId], references: [id])
+  interestTags String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("partners")
 }
 
 /// 지원서 처리 상태

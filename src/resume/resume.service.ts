@@ -54,6 +54,7 @@ export class ResumeService {
         data: {
           name: dto.name,
           phone: dto.phone,
+          email: dto.email,
           type: 'PARTNER',
         },
       });

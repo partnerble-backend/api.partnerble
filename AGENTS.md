@@ -109,7 +109,10 @@ export class ApplicationDto {
 
 - 모든 request body는 DTO 클래스로 정의한다
 - `class-validator` 데코레이터로 유효성 검사를 명시한다
-- Response DTO는 Prisma 모델을 그대로 노출하지 않고 별도 정의한다
+- Response DTO는 **항상** 별도 클래스로 정의한다
+  - Prisma 생성 타입은 TypeScript 컴파일 타임에만 존재하고 런타임에 사라지므로, NestJS Swagger가 응답 스키마를 생성할 수 없다
+  - 단일 Prisma 모델을 그대로 반환하는 경우에도 `@ApiProperty` 데코레이터가 있는 Response DTO 클래스를 정의해야 한다
+  - ✅ 별도 정의 필요 (모든 경우): 단일 모델 반환, 복수 모델 조인, 계산 필드, 필드 재구성
 - 모든 DTO 프로퍼티에 `@ApiProperty()` 또는 `@ApiPropertyOptional()`을 추가한다
   - 문자열: `@ApiProperty({ example: '...' })`
   - 숫자: `@ApiProperty({ example: 0 })`
@@ -154,14 +157,22 @@ export class ApplicationDto {
 
 ```ts
 // ✅ List 응답 예시
+import { ApiProperty } from '@nestjs/swagger';
 import { ListResponseDto } from '../../common/dto/response.dto';
 
-export class RecruitListResponseDto extends ListResponseDto<RecruitListItemDto> {}
+export class RecruitListResponseDto extends ListResponseDto<RecruitListItemDto> {
+  @ApiProperty({ type: () => [RecruitListItemDto] })
+  items: RecruitListItemDto[];
+}
 
 // ✅ Paginated 응답 예시
+import { ApiProperty } from '@nestjs/swagger';
 import { PaginatedResponseDto } from '../../common/dto/response.dto';
 
-export class ApplicationListResponseDto extends PaginatedResponseDto<ApplicationListItemDto> {}
+export class ApplicationListResponseDto extends PaginatedResponseDto<ApplicationListItemDto> {
+  @ApiProperty({ type: () => [ApplicationListItemDto] })
+  items: ApplicationListItemDto[];
+}
 ```
 
 **Swagger decoration rules:**
@@ -205,6 +216,7 @@ export class ApplicationListResponseDto extends PaginatedResponseDto<Application
 
 - ✅ **Always:** terminology.md 준수, DTO 유효성 검사, Prisma를 통한 DB 접근, lint 통과 후 커밋
 - ⚠️ **Ask first:** 새 npm 패키지 설치, Prisma 스키마 변경, 외부 서비스 연동 추가
+- ⚠️ **Ask first (코드 수정):** 버그 원인을 먼저 설명하고, 수정 방향을 제안한 뒤 관리자 확인 후 코드를 변경한다. 원인 파악 없이 바로 코드 수정으로 넘어가지 않는다.
 - 🚫 **Never:** `pnpm build`를 에이전트 세션 중 실행, `.env*` 파일 커밋, `any` 타입 사용
 - 🚫 **Never:** `main` 브랜치에 직접 push 또는 머지 — 관리자 전용
 

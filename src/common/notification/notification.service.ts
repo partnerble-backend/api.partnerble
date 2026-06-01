@@ -73,7 +73,8 @@ export class NotificationService {
     const body = [
       `공고명: ${recruit.roleDesc}`,
       `지원자 이름: ${partner.name}`,
-      `연락처: ${partner.phone}`,
+      `연락처: ${partner.phone ?? '없음'}`,
+      `이메일: ${partner.email ?? '없음'}`,
       `자기소개: ${introduction}`,
       `첨부파일 URL: ${attachmentUrl ?? '없음'}`,
     ].join('\n');
@@ -115,6 +116,7 @@ export class NotificationService {
     roleDesc: string;
     name: string;
     email: string;
+    recruitLink: string;
   }): Promise<void> {
     const subject = `[파트너블] 새 공고 신청 — ${data.companyName}`;
     const body = [
@@ -122,6 +124,7 @@ export class NotificationService {
       `역할: ${data.roleDesc}`,
       `신청자 이름: ${data.name}`,
       `신청자 이메일: ${data.email}`,
+      `공고 링크: ${data.recruitLink}`,
     ].join('\n');
 
     try {
@@ -129,6 +132,62 @@ export class NotificationService {
     } catch (error) {
       this.logger.error(
         `Recruit notification failed for recruit ${data.recruitId}: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  async notifyRecruitRegisteredToFounder(data: {
+    recruitId: string;
+    founderEmail: string;
+    founderName: string;
+    companyName: string;
+    roleDesc: string;
+    recruitLink: string;
+  }): Promise<void> {
+    const subject = `[파트너블] 공고가 등록되었습니다 — ${data.companyName}`;
+    const body = [
+      `안녕하세요, ${data.founderName}님.`,
+      ``,
+      `아래 공고가 정상적으로 접수되었습니다.`,
+      ``,
+      `회사명: ${data.companyName}`,
+      `역할: ${data.roleDesc}`,
+      ``,
+      `공고 링크: ${data.recruitLink}`,
+      ``,
+      `검토 후 활성화되면 파트너에게 공개됩니다.`,
+      `파트너블을 이용해 주셔서 감사합니다.`,
+    ].join('\n');
+
+    try {
+      await this.sendEmail(data.founderEmail, subject, body);
+    } catch (error) {
+      this.logger.error(
+        `Founder notification failed for recruit ${data.recruitId}: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  async notifyPartnerRegistration(data: {
+    partnerId: string;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    interestTags: string[];
+  }): Promise<void> {
+    const subject = `[파트너블] 새 파트너 등록 — ${data.name}`;
+    const body = [
+      `이름: ${data.name}`,
+      `이메일: ${data.email ?? '없음'}`,
+      `연락처: ${data.phone ?? '없음'}`,
+      `관심 분야: ${data.interestTags.join(', ')}`,
+    ].join('\n');
+
+    try {
+      await this.sendEmail(this.operatorEmail, subject, body);
+    } catch (error) {
+      this.logger.error(
+        `Partner registration notification failed for partner ${data.partnerId}: ${(error as Error).message}`,
       );
     }
   }

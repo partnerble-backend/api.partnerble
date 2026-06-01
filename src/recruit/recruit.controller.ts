@@ -28,12 +28,12 @@ export class RecruitController {
   constructor(private readonly recruitService: RecruitService) {}
 
   @Post()
-  @HttpCode(201)
   @ApiOperation({
     summary: '공고 생성',
     operationId: 'createRecruit',
     description: `새 채용 공고를 생성합니다.
-    • 생성 후 운영자에게 이메일 알림이 발송됩니다`,
+    • 생성 후 창업자 및 운영자에게 이메일 알림이 발송됩니다
+    • 동일 이메일로 이미 등록된 공고가 있으면 200을 반환합니다`,
   })
   @ApiBody({ type: CreateRecruitDto })
   @ApiResponse({
@@ -42,6 +42,7 @@ export class RecruitController {
     type: RecruitResponseDto,
   })
   @ApiResponse({ status: 400, description: '유효하지 않은 요청 데이터' })
+  @HttpCode(201)
   create(@Body() dto: CreateRecruitDto): Promise<RecruitResponseDto> {
     return this.recruitService.create(dto);
   }
