@@ -35,7 +35,7 @@ aws --version
 
 # AWS 자격증명 확인
 aws sts get-caller-identity
-# Account: REPLACE_WITH_AWS_ACCOUNT_ID 이 출력되면 정상
+# Account: <YOUR_AWS_ACCOUNT_ID> 가 출력되면 정상
 ```
 
 > 설치되어 있지 않다면 루트 [README.md](../README.md)의 인프라 관리 섹션을 참고하세요.
@@ -379,6 +379,13 @@ terraform apply -auto-approve
 # ❌ 절대 금지
 git add terraform/environments/prod/terraform.tfvars
 ```
+
+### 민감하거나 식별 가능한 값 하드코딩 금지
+
+이 저장소는 public repository입니다. AWS 계정 ID, 내부 도메인, IP 등
+민감도가 높거나 우리 조직을 특정할 수 있는 값은 README·예시 코드 등
+git에 올라가는 모든 곳에 실제 값 대신 플레이스홀더로 기재합니다.
+실제 값은 `terraform.tfvars`(gitignore 대상)에만 둡니다.
 
 ---
 
